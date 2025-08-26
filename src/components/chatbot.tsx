@@ -44,10 +44,10 @@ export function Chatbot() {
     setLoading(true)
 
     try {
-      const { specialists } = await aiSearchForSpecialists({ query: input })
+      const { response, specialists } = await aiSearchForSpecialists({ query: input })
       let assistantMessageContent = ""
       if (specialists && specialists.length > 0) {
-        assistantMessageContent = `Based on your symptoms, I suggest consulting one of the following specialists: ${specialists.join(", ")}. Would you like to see a list of available doctors?`
+        assistantMessageContent = `${response} Would you like me to help you find a doctor with one of these specialties?`
       } else {
         assistantMessageContent = "I couldn't determine a specialty based on your symptoms. Could you please provide more details?"
       }
