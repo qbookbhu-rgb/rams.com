@@ -28,6 +28,7 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { GoogleIcon } from "@/components/icons"
 import { useToast } from "@/hooks/use-toast"
+import { useAuthState } from "react-firebase-hooks/auth"
 
 type Role = "patient" | "doctor" | "medical-store" | "ambulance" | "lab" | "yoga"
 
@@ -38,6 +39,39 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [mobile, setMobile] = useState("")
   const [loading, setLoading] = useState(false)
+  const [user, authLoading] = useAuthState(auth)
+
+  if (authLoading) {
+    return (
+       <div className="flex min-h-screen items-center justify-center p-4 medical-background">
+          <Card className="w-full max-w-md shadow-2xl animate-pulse">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-4 flex items-center justify-center">
+                <HeartPulse className="h-10 w-10 text-primary" />
+              </div>
+              <div className="h-8 bg-muted rounded w-3/4 mx-auto"></div>
+              <div className="h-4 bg-muted rounded w-1/2 mx-auto mt-2"></div>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="h-10 bg-muted rounded w-full"></div>
+              <div className="space-y-2">
+                 <div className="h-4 bg-muted rounded w-1/4"></div>
+                 <div className="h-10 bg-muted rounded w-full"></div>
+              </div>
+              <div className="h-12 bg-muted rounded w-full"></div>
+            </CardContent>
+             <CardFooter className="flex justify-center">
+                <div className="h-4 bg-muted rounded w-1/3"></div>
+            </CardFooter>
+          </Card>
+      </div>
+    )
+  }
+
+  if (user) {
+    router.push("/dashboard");
+    return null; // or a loading spinner
+  }
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -223,5 +257,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
-    

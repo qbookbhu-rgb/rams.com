@@ -16,6 +16,7 @@ import {
 import { auth, db } from "@/lib/firebase"
 import { doc, getDoc } from "firebase/firestore"
 import { User as FirebaseUser } from "firebase/auth"
+import { useAuthState } from "react-firebase-hooks/auth"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -103,29 +104,7 @@ const offers = [
 ]
 
 export default function PatientDashboard() {
-  const [user, setUser] = useState<FirebaseUser | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        // Fetch user profile from Firestore
-        const userDocRef = doc(db, "users", currentUser.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-          setUserProfile(userDocSnap.data() as UserProfile);
-        }
-      } else {
-        setUser(null);
-        setUserProfile(null);
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
+  const [user, loading] = useAuthState(auth);
   
   const userName = user?.displayName || user?.email?.split('@')[0] || 'Patient';
   const userId = user?.uid || 'XXXXXXXXXXXXXXXX';
