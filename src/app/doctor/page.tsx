@@ -40,7 +40,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Header } from "@/components/header"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -222,7 +221,7 @@ export default function DoctorDashboard() {
                     </div>
                     <span className="font-semibold">4.5 (24 Reviews)</span>
                   </div>
-                </Header>
+                </CardHeader>
                 <CardContent className="grid gap-6">
                   {reviews.map((review, index) => (
                     <div key={index} className="flex gap-4">
@@ -289,7 +288,5 @@ function PatientTable({ patients }: { patients: Patient[] }) {
         ))}
       </TableBody>
     </Table>
-  )
+  );
 }
-
-    
