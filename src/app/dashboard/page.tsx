@@ -1,245 +1,128 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
 import Link from "next/link"
+import Image from "next/image"
 import {
-  Ambulance,
-  FlaskConical,
-  HeartPulse,
-  Pill,
+  MapPin,
+  Search,
   Stethoscope,
-  Wind,
-  AlertTriangle,
+  Pill,
+  ClipboardList,
+  FlaskConical,
+  BookOpen,
+  Building,
 } from "lucide-react"
-import { auth, db } from "@/lib/firebase"
-import { doc, getDoc } from "firebase/firestore"
-import { User as FirebaseUser } from "firebase/auth"
 import { useAuthState } from "react-firebase-hooks/auth"
+import { auth } from "@/lib/firebase"
 
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
+import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
-import { Skeleton } from "@/components/ui/skeleton"
-import { HealthCard } from "@/components/health-card"
+import { Card, CardContent } from "@/components/ui/card"
 
-interface UserProfile {
-  uid: string;
-  email: string;
-  role: string;
-}
-
-const quickAccessItems = [
-  {
-    title: "Doctor Consultation",
-    icon: Stethoscope,
-    description: "Consult with top doctors online.",
-    href: "/consult-doctor",
-  },
-  {
-    title: "Order Medicines",
-    icon: Pill,
-    description: "Get medicines delivered to your doorstep.",
-    href: "/order-medicines",
-  },
-  {
-    title: "Diagnostic Tests",
-    icon: FlaskConical,
-    description: "Book lab tests from home.",
-    href: "/lab-tests",
-  },
-  {
-    title: "Ambulance Service",
-    icon: Ambulance,
-    description: "24/7 emergency ambulance service.",
-    href: "/ambulance-sos",
-  },
-   {
-    title: "SOS",
-    icon: AlertTriangle,
-    description: "Immediate emergency assistance.",
-    href: "/ambulance-sos",
-  },
-  {
-    title: "Yoga & Wellness",
-    icon: Wind,
-    description: "Book online or offline yoga classes.",
-    href: "/yoga/booking",
-  },
+const popularSearches = [
+  "Dermatologist",
+  "Pediatrician",
+  "Gynecologist",
+  "Cardiologist",
 ]
 
-const offers = [
-  {
-    title: "Flat 25% Off",
-    description: "On first medicine order",
-    image: "https://picsum.photos/seed/medicines/600/400",
-    hint: "medicines pharmacy"
-  },
-  {
-    title: "Save 50% on Tests",
-    description: "Full body checkup packages",
-    image: "https://picsum.photos/seed/labtest/600/400",
-    hint: "lab test"
-  },
-  {
-    title: "Free Doctor Consultation",
-    description: "For new users",
-    image: "https://picsum.photos/seed/doctor/600/400",
-    hint: "doctor consultation"
-  },
+const bottomNavItems = [
+  { title: "Consult with a doctor", icon: Stethoscope, href: "/consult-doctor" },
+  { title: "Order Medicines", icon: Pill, href: "/order-medicines" },
+  { title: "View medical records", icon: ClipboardList, href: "#" },
+  { title: "Book test", icon: FlaskConical, href: "/lab-tests" },
+  { title: "Read articles", icon: BookOpen, href: "#" },
+  { title: "For healthcare providers", icon: Building, href: "#" },
 ]
 
 export default function PatientDashboard() {
-  const [user, loading] = useAuthState(auth);
-  
-  const userName = user?.displayName || user?.email?.split('@')[0] || 'Patient';
-  const userId = user?.uid || 'XXXXXXXXXXXXXXXX';
+  const [user, loading] = useAuthState(auth)
 
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
-      <main className="flex-1 bg-background">
-        <div className="container mx-auto grid gap-8 p-4 md:p-8">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight font-headline">
-              Patient Dashboard
-            </h1>
-            <p className="text-muted-foreground">
-              Quick access to all your health needs.
-            </p>
-          </div>
-
-          <section>
-            <h2 className="text-2xl font-semibold tracking-tight mb-4 font-headline">
-              Quick Access
-            </h2>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-6">
-              {quickAccessItems.map((item) => (
-                <Card
-                  key={item.title}
-                  className="hover:shadow-lg transition-shadow duration-300"
-                >
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      {item.title}
-                    </CardTitle>
-                    <item.icon className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-xs text-muted-foreground">
-                      {item.description}
-                    </p>
-                    <Button size="sm" className="mt-4" asChild>
-                      <Link href={item.href}>Get Started</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold tracking-tight mb-4 font-headline">
-              Special Offers
-            </h2>
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent>
-                {offers.map((offer, index) => (
-                  <CarouselItem
-                    key={index}
-                    className="md:basis-1/2 lg:basis-1/3"
-                  >
-                    <div className="p-1">
-                      <Card className="overflow-hidden">
-                         <CardHeader className="p-0">
-                          <Image
-                            src={offer.image}
-                            alt={offer.title}
-                            width={600}
-                            height={400}
-                            className="aspect-[3/2] w-full object-cover"
-                            data-ai-hint={offer.hint}
-                          />
-                        </CardHeader>
-                        <CardContent className="p-4">
-                          <h3 className="text-lg font-semibold">{offer.title}</h3>
-                          <p className="text-sm text-muted-foreground mt-1">{offer.description}</p>
-                        </CardContent>
-                      </Card>
+      <main className="flex-1">
+        <section className="relative w-full bg-blue-900/5 text-white hero-background overflow-hidden">
+          <div className="container mx-auto px-4 md:px-6 relative z-10">
+             <div className="flex flex-col items-center justify-center text-center py-20 md:py-32">
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white font-headline">Your home for health</h1>
+                <div className="mt-8 w-full max-w-4xl bg-white dark:bg-gray-800/50 dark:backdrop-blur-sm rounded-xl shadow-2xl p-4 md:p-6">
+                    <h2 className="text-2xl font-semibold text-gray-700 dark:text-white mb-4">Find and Book</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <div className="relative">
+                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                            <Input
+                                type="text"
+                                placeholder="Bangalore"
+                                className="pl-10 text-gray-900 dark:text-white"
+                            />
+                        </div>
+                        <div className="relative">
+                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                            <Input
+                                type="text"
+                                placeholder="Search doctors, clinics, hospitals, etc."
+                                className="pl-10 text-gray-900 dark:text-white"
+                            />
+                        </div>
                     </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
-            </Carousel>
-          </section>
-
-          <div className="grid gap-8 lg:grid-cols-3">
-            <section className="lg:col-span-1">
-              <h2 className="text-2xl font-semibold tracking-tight mb-4 font-headline">
-                My Health Card
-              </h2>
-               {loading ? (
-                <HealthCard.Skeleton />
-              ) : user ? (
-                <HealthCard name={userName} userId={userId} />
-               ) : (
-                <Card className="flex flex-col items-center justify-center p-6 text-center shadow-lg h-[220px]">
-                    <p className="text-muted-foreground">Please log in to see your health card.</p>
-                     <Button asChild className="mt-4">
-                      <Link href="/">Log In</Link>
-                    </Button>
-                </Card>
-               )}
-            </section>
-
-            <section className="lg:col-span-2">
-              <h2 className="text-2xl font-semibold tracking-tight mb-4 font-headline">
-                Nearby Services
-              </h2>
-              <Card className="overflow-hidden shadow-lg">
-                <CardHeader>
-                  <CardTitle>Medical Stores, Labs & Hospitals</CardTitle>
-                  <CardDescription>
-                    Find trusted healthcare services near you.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="relative h-80 w-full rounded-md overflow-hidden">
-                    <Image
-                      src="https://picsum.photos/800/400?random=map"
-                      data-ai-hint="map city"
-                      alt="Map of nearby services"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </section>
+                     <div className="mt-4 flex flex-wrap items-center justify-center gap-2 md:gap-4">
+                        <p className="text-sm text-gray-600 dark:text-gray-300">Popular searches:</p>
+                        {popularSearches.map(search => (
+                             <Link key={search} href="#" className="text-sm text-primary dark:text-cyan-400 hover:underline">
+                                {search}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </div>
           </div>
-        </div>
+          <div className="absolute bottom-0 left-0 w-full h-48">
+             <Image
+                src="https://picsum.photos/seed/cityscape/1600/400"
+                alt="City illustration"
+                layout="fill"
+                objectFit="cover"
+                className="opacity-20"
+                data-ai-hint="cityscape illustration"
+            />
+          </div>
+        </section>
+
+        <section className="bg-white dark:bg-card shadow-md">
+            <div className="container mx-auto px-4 md:px-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 divide-x dark:divide-gray-700">
+                    {bottomNavItems.map(item => (
+                        <Link href={item.href} key={item.title} className="flex flex-col items-center justify-center text-center p-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
+                            <item.icon className="h-8 w-8 text-primary mb-2" />
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{item.title}</span>
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        </section>
+
+        <section className="py-12 md:py-20">
+             <div className="container mx-auto px-4 md:px-6">
+                 <Card className="overflow-hidden">
+                    <CardContent className="p-0">
+                         <Link href="#">
+                            <Image
+                                src="https://picsum.photos/seed/expert-surgeon/1200/400"
+                                alt="Book appointment with an expert surgeon"
+                                width={1200}
+                                height={400}
+                                className="w-full h-auto object-cover"
+                                data-ai-hint="doctor surgeon"
+                            />
+                        </Link>
+                    </CardContent>
+                </Card>
+             </div>
+        </section>
+
       </main>
     </div>
   )
