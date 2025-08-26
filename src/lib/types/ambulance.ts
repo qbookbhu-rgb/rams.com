@@ -10,4 +10,8 @@ export interface Ambulance {
     serviceArea: string;
     userId: string;
     updatedAt: any;
+    location?: {
+        latitude: number;
+        longitude: number;
+    };
 }

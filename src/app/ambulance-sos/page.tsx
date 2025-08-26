@@ -3,10 +3,10 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowLeft, Search, Phone, IndianRupee, MapPin } from "lucide-react"
-import { collection, getDocs } from "firebase/firestore"
-import { db } from "@/lib/firebase"
+import { ArrowLeft, Search, Phone, IndianRupee, MapPin, Loader2 } from "lucide-react"
 import { Ambulance } from "@/lib/types/ambulance"
+import { intelligentSos } from "@/ai/sos-flow"
+import { useToast } from "@/hooks/use-toast"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -19,33 +19,57 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function AmbulanceSosPage() {
   const [ambulances, setAmbulances] = useState<Ambulance[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { toast } = useToast()
 
   useEffect(() => {
-    const fetchAmbulances = async () => {
+    const findAmbulances = () => {
+      if (!navigator.geolocation) {
+        setError("Geolocation is not supported by your browser. We can't find nearby ambulances.")
+        setLoading(false)
+        return
+      }
+
       setLoading(true)
       setError(null)
-      try {
-        const querySnapshot = await getDocs(collection(db, "ambulances"));
-        const ambulanceData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Ambulance[];
-        setAmbulances(ambulanceData);
-      } catch (e) {
-        console.error("Error fetching ambulances: ", e)
-        setError("Failed to load ambulance services. Please try again later.")
-      } finally {
-        setLoading(false)
-      }
+      
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const { latitude, longitude } = position.coords
+            const result = await intelligentSos({
+              userLocation: { latitude, longitude },
+            })
+            if (result.ambulances.length === 0) {
+              setError("No available ambulances found near you at the moment.")
+            }
+            setAmbulances(result.ambulances)
+          } catch (e) {
+            console.error("Error fetching ambulances: ", e)
+            setError("AI failed to find ambulances. Please try again later.")
+            toast({
+              variant: "destructive",
+              title: "AI Search Failed",
+              description: "Could not find ambulances. Please try again."
+            })
+          } finally {
+            setLoading(false)
+          }
+        },
+        () => {
+          setError("Unable to retrieve your location. Please enable location services.")
+          setLoading(false)
+        }
+      )
     }
 
-    fetchAmbulances()
-  }, [])
+    findAmbulances()
+  }, [toast])
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -56,33 +80,42 @@ export default function AmbulanceSosPage() {
           </Link>
         </Button>
         <h1 className="text-xl font-bold font-headline">Ambulance & SOS</h1>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="icon" disabled>
           <Search className="h-6 w-6" />
         </Button>
       </header>
       <main className="flex-1 p-4">
         <div className="mx-auto max-w-md space-y-6">
           {loading && (
-             Array.from({ length: 3 }).map((_, index) => (
-                <Card key={index} className="overflow-hidden">
-                    <CardContent className="p-4">
-                    <div className="flex items-center gap-4">
-                        <Skeleton className="h-16 w-16 rounded-full" />
-                        <div className="flex-1 space-y-2">
-                            <Skeleton className="h-5 w-3/4" />
-                            <Skeleton className="h-4 w-1/2" />
-                            <Skeleton className="h-4 w-full" />
+             <div className="text-center space-y-4">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+                <p className="text-muted-foreground">Finding nearest available ambulances...</p>
+                 {Array.from({ length: 3 }).map((_, index) => (
+                    <Card key={index} className="overflow-hidden">
+                        <CardContent className="p-4">
+                        <div className="flex items-center gap-4">
+                            <Skeleton className="h-16 w-16 rounded-full" />
+                            <div className="flex-1 space-y-2">
+                                <Skeleton className="h-5 w-3/4" />
+                                <Skeleton className="h-4 w-1/2" />
+                                <Skeleton className="h-4 w-full" />
+                            </div>
                         </div>
-                    </div>
-                    </CardContent>
-                </Card>
-             ))
+                        </CardContent>
+                    </Card>
+                 ))}
+             </div>
           )}
 
-          {error && <p className="text-center text-red-500">{error}</p>}
+          {error && (
+             <Alert variant="destructive">
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
 
           {!loading && !error && ambulances.map((ambulance) => (
-              <Card key={ambulance.id} className="overflow-hidden">
+              <Card key={ambulance.id} className="overflow-hidden border-primary border-2 shadow-lg">
                  <CardHeader className="flex flex-row items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Avatar className="h-12 w-12 border">
@@ -109,8 +142,10 @@ export default function AmbulanceSosPage() {
                         <IndianRupee className="h-4 w-4 mt-0.5 shrink-0" />
                         <span>Charges: {ambulance.charges}</span>
                     </div>
-                     <Button className="w-full mt-2">
-                        <Phone className="mr-2 h-4 w-4" /> Call Now ({ambulance.contact})
+                     <Button className="w-full mt-2" asChild>
+                        <a href={`tel:${ambulance.contact}`}>
+                            <Phone className="mr-2 h-4 w-4" /> Call Now ({ambulance.contact})
+                        </a>
                     </Button>
                 </CardContent>
               </Card>
