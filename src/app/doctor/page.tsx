@@ -75,9 +75,9 @@ export default function DoctorDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const totalEarnings = 5230.00
-  const commissionPaid = totalEarnings * 0.05
-  const netPayout = totalEarnings - commissionPaid
+  const totalEarnings = 5230.00;
+  const commissionPaid = totalEarnings * 0.05;
+  const netPayout = totalEarnings - commissionPaid;
 
   useEffect(() => {
      const unsubscribe = onAuthStateChanged(auth, (user: FirebaseUser | null) => {
@@ -217,7 +217,7 @@ export default function DoctorDashboard() {
                   <CardDescription>
                     Review your earnings and withdraw.
                   </CardDescription>
-                </Header>
+                </CardHeader>
                 <CardContent className="grid gap-3 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Total Bookings</span>
@@ -330,3 +330,5 @@ function AppointmentTable({ appointments }: { appointments: Appointment[] }) {
     </Table>
   )
 }
+
+    
