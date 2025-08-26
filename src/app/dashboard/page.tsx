@@ -1,6 +1,7 @@
 
 "use client"
 
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
@@ -12,6 +13,9 @@ import {
   Wind,
   AlertTriangle,
 } from "lucide-react"
+import { auth, db } from "@/lib/firebase"
+import { doc, getDoc } from "firebase/firestore"
+import { User as FirebaseUser } from "firebase/auth"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -31,6 +35,13 @@ import {
 import { Header } from "@/components/header"
 import { QrCodeIcon } from "@/components/icons"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Skeleton } from "@/components/ui/skeleton"
+
+interface UserProfile {
+  uid: string;
+  email: string;
+  role: string;
+}
 
 const quickAccessItems = [
   {
@@ -93,6 +104,30 @@ const offers = [
 ]
 
 export default function PatientDashboard() {
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        // Fetch user profile from Firestore
+        const userDocRef = doc(db, "users", currentUser.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+          setUserProfile(userDocSnap.data() as UserProfile);
+        }
+      } else {
+        setUser(null);
+        setUserProfile(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+  
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
@@ -155,18 +190,20 @@ export default function PatientDashboard() {
                   >
                     <div className="p-1">
                       <Card className="overflow-hidden">
-                        <Image
-                          src={offer.image}
-                          alt={offer.title}
-                          width={600}
-                          height={400}
-                          className="aspect-video w-full object-cover"
-                          data-ai-hint={offer.hint}
-                        />
-                        <CardHeader>
-                          <CardTitle>{offer.title}</CardTitle>
-                          <CardDescription>{offer.description}</CardDescription>
+                         <CardHeader className="p-0">
+                          <Image
+                            src={offer.image}
+                            alt={offer.title}
+                            width={600}
+                            height={400}
+                            className="aspect-video w-full object-cover"
+                            data-ai-hint={offer.hint}
+                          />
                         </CardHeader>
+                        <CardContent className="p-4">
+                          <CardTitle className="text-lg">{offer.title}</CardTitle>
+                          <CardDescription className="mt-1">{offer.description}</CardDescription>
+                        </CardContent>
                       </Card>
                     </div>
                   </CarouselItem>
@@ -182,13 +219,21 @@ export default function PatientDashboard() {
               <h2 className="text-2xl font-semibold tracking-tight mb-4 font-headline">
                 My Health Card
               </h2>
+               {loading ? (
+                <Card className="flex flex-col items-center justify-center p-6 text-center shadow-lg">
+                  <Skeleton className="w-24 h-24 rounded-full mb-4" />
+                  <Skeleton className="h-6 w-32 mb-2" />
+                  <Skeleton className="h-4 w-40 mb-4" />
+                  <Skeleton className="h-32 w-32" />
+                </Card>
+              ) : user ? (
               <Card className="flex flex-col items-center justify-center p-6 text-center shadow-lg">
                 <Avatar className="w-24 h-24 mb-4">
-                  <AvatarImage src="https://i.pravatar.cc/150?u=patient" alt="Patient" />
-                  <AvatarFallback>P</AvatarFallback>
+                  <AvatarImage src={`https://i.pravatar.cc/150?u=${user.uid}`} alt="Patient" />
+                  <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
-                <p className="font-semibold">Patient Name</p>
-                <p className="text-sm text-muted-foreground mb-4">ID: RAMS12345</p>
+                <p className="font-semibold">{user.email?.split('@')[0]}</p>
+                <p className="text-sm text-muted-foreground mb-4">ID: {user.uid.slice(0,10).toUpperCase()}</p>
                 <div className="rounded-lg bg-white p-2">
                   <QrCodeIcon className="h-32 w-32" />
                 </div>
@@ -196,6 +241,11 @@ export default function PatientDashboard() {
                   Download Card
                 </Button>
               </Card>
+               ) : (
+                <Card className="flex flex-col items-center justify-center p-6 text-center shadow-lg">
+                    <p className="text-muted-foreground">Please log in to see your health card.</p>
+                </Card>
+               )}
             </section>
 
             <section className="lg:col-span-2">
