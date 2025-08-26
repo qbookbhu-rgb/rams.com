@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useEffect, useState } from "react"
@@ -70,13 +71,11 @@ export function Header() {
           </span>
         </Link>
         <div className="flex flex-1 items-center justify-end space-x-4">
-          <div className="relative w-full max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search Doctor, Medicine, Test..."
-              className="pl-9"
-            />
-          </div>
+           <Button variant="outline" size="sm" asChild>
+              <Link href="/search">
+                <Search className="mr-2 h-4 w-4" /> AI Search
+              </Link>
+            </Button>
           <nav className="flex items-center space-x-2">
             <div className="flex items-center space-x-2">
               <Select onValueChange={handleViewChange} value={view}>

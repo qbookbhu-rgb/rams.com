@@ -16,7 +16,7 @@ const AISearchForSpecialistsInputSchema = z.object({
   query: z.string().describe('The user query to search for specialists.'),
 });
 
-export type AISearchForSpecialistsInput = z.infer<
+export type AISearchForSpecialisInput = z.infer<
   typeof AISearchForSpecialistsInputSchema
 >;
 
@@ -31,7 +31,7 @@ export type AISearchForSpecialistsOutput = z.infer<
 >;
 
 export async function aiSearchForSpecialists(
-  input: AISearchForSpecialistsInput
+  input: AISearchForSpecialisInput
 ): Promise<AISearchForSpecialistsOutput> {
   return aiSearchForSpecialistsFlow(input);
 }
