@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import {
   Calendar,
   ChevronRight,
@@ -120,9 +121,11 @@ export default function DoctorDashboard() {
                         <Video className="mr-2 h-4 w-4" />
                         Video Call
                       </Button>
-                      <Button size="sm" variant="default" className="ml-auto">
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit Profile
+                      <Button size="sm" variant="default" className="ml-auto" asChild>
+                        <Link href="/doctor/profile">
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit Profile
+                        </Link>
                       </Button>
                     </div>
                   </div>
