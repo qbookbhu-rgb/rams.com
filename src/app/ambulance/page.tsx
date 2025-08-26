@@ -1,6 +1,10 @@
 
 "use client"
 
+import { useState, useEffect } from "react"
+import { doc, getDoc } from "firebase/firestore"
+import { auth, db } from "@/lib/firebase"
+import { Ambulance } from "@/lib/types/ambulance"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/header"
 import { CircleDollarSign, Pencil } from "lucide-react"
@@ -14,11 +18,47 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function AmbulanceDashboard() {
-    const totalEarnings = 15000.00
-    const commissionPaid = totalEarnings * 0.05
-    const netPayout = totalEarnings - commissionPaid
+  const [ambulanceData, setAmbulanceData] = useState<Ambulance | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
+  const totalEarnings = 15000.00
+  const commissionPaid = totalEarnings * 0.05
+  const netPayout = totalEarnings - commissionPaid
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        const fetchAmbulanceData = async () => {
+          setLoading(true)
+          try {
+            const docRef = doc(db, "ambulances", user.uid)
+            const docSnap = await getDoc(docRef)
+            if (docSnap.exists()) {
+              setAmbulanceData({ id: docSnap.id, ...docSnap.data() } as Ambulance)
+            } else {
+              // Handle case where profile is not yet created
+              setAmbulanceData(null)
+            }
+          } catch (err) {
+            console.error("Error fetching ambulance data: ", err)
+            setError("Failed to load your data. Please try again.")
+          } finally {
+            setLoading(false)
+          }
+        }
+        fetchAmbulanceData()
+      } else {
+        // No user is signed in.
+        setLoading(false)
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -37,12 +77,23 @@ export default function AmbulanceDashboard() {
              <Card>
                 <CardHeader>
                   <CardTitle>Driver & Vehicle Details</CardTitle>
-                  <CardDescription>Ramesh Kumar - UP65AB1234</CardDescription>
+                   {loading ? (
+                    <Skeleton className="h-5 w-48" />
+                  ) : (
+                    <CardDescription>
+                      {ambulanceData ? `${ambulanceData.driverName} - ${ambulanceData.numberPlate}` : "Complete your profile"}
+                    </CardDescription>
+                  )}
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Vehicle Type: ICU Ambulance
-                  </p>
+                  {loading ? (
+                    <Skeleton className="h-5 w-32" />
+                  ) : (
+                     <p className="text-sm text-muted-foreground">
+                        Vehicle Type: {ambulanceData?.vehicleType || 'N/A'}
+                     </p>
+                  )}
+                 
                   <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
                     <Link href="/ambulance/profile">
                       <Pencil className="mr-2 h-4 w-4" /> Edit Vehicle Info
