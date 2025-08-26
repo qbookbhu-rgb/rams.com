@@ -33,9 +33,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import { Header } from "@/components/header"
-import { QrCodeIcon } from "@/components/icons"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
+import { HealthCard } from "@/components/health-card"
 
 interface UserProfile {
   uid: string;
@@ -128,6 +127,9 @@ export default function PatientDashboard() {
     return () => unsubscribe();
   }, []);
   
+  const userName = user?.displayName || user?.email?.split('@')[0] || 'Patient';
+  const userId = user?.uid || 'XXXXXXXXXXXXXXXX';
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
@@ -196,13 +198,13 @@ export default function PatientDashboard() {
                             alt={offer.title}
                             width={600}
                             height={400}
-                            className="aspect-video w-full object-cover"
+                            className="aspect-[3/2] w-full object-cover"
                             data-ai-hint={offer.hint}
                           />
                         </CardHeader>
                         <CardContent className="p-4">
-                          <CardTitle className="text-lg">{offer.title}</CardTitle>
-                          <CardDescription className="mt-1">{offer.description}</CardDescription>
+                          <h3 className="text-lg font-semibold">{offer.title}</h3>
+                          <p className="text-sm text-muted-foreground mt-1">{offer.description}</p>
                         </CardContent>
                       </Card>
                     </div>
@@ -220,30 +222,15 @@ export default function PatientDashboard() {
                 My Health Card
               </h2>
                {loading ? (
-                <Card className="flex flex-col items-center justify-center p-6 text-center shadow-lg">
-                  <Skeleton className="w-24 h-24 rounded-full mb-4" />
-                  <Skeleton className="h-6 w-32 mb-2" />
-                  <Skeleton className="h-4 w-40 mb-4" />
-                  <Skeleton className="h-32 w-32" />
-                </Card>
+                <HealthCard.Skeleton />
               ) : user ? (
-              <Card className="flex flex-col items-center justify-center p-6 text-center shadow-lg">
-                <Avatar className="w-24 h-24 mb-4">
-                  <AvatarImage src={`https://i.pravatar.cc/150?u=${user.uid}`} alt="Patient" />
-                  <AvatarFallback>{user.email?.charAt(0).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <p className="font-semibold">{user.email?.split('@')[0]}</p>
-                <p className="text-sm text-muted-foreground mb-4">ID: {user.uid.slice(0,10).toUpperCase()}</p>
-                <div className="rounded-lg bg-white p-2">
-                  <QrCodeIcon className="h-32 w-32" />
-                </div>
-                <Button className="mt-4" variant="outline">
-                  Download Card
-                </Button>
-              </Card>
+                <HealthCard name={userName} userId={userId} />
                ) : (
-                <Card className="flex flex-col items-center justify-center p-6 text-center shadow-lg">
+                <Card className="flex flex-col items-center justify-center p-6 text-center shadow-lg h-[220px]">
                     <p className="text-muted-foreground">Please log in to see your health card.</p>
+                     <Button asChild className="mt-4">
+                      <Link href="/">Log In</Link>
+                    </Button>
                 </Card>
                )}
             </section>
@@ -262,7 +249,7 @@ export default function PatientDashboard() {
                 <CardContent>
                   <div className="relative h-80 w-full rounded-md overflow-hidden">
                     <Image
-                      src="https://picsum.photos/800/400"
+                      src="https://picsum.photos/800/400?random=map"
                       data-ai-hint="map city"
                       alt="Map of nearby services"
                       fill
