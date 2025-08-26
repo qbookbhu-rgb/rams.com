@@ -1,10 +1,11 @@
+
 "use client"
 
 import Link from "next/link"
 import {
   CreditCard,
   LogOut,
-  PlusCircle,
+  Info,
   Settings,
   User,
 } from "lucide-react"
@@ -54,6 +55,12 @@ export function UserNav() {
           <DropdownMenuItem>
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
+          </DropdownMenuItem>
+           <DropdownMenuItem asChild>
+            <Link href="/about">
+              <Info className="mr-2 h-4 w-4" />
+              <span>About Us</span>
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
