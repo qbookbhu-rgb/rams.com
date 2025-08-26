@@ -2,7 +2,7 @@
 "use client"
 
 import { useState } from "react"
-import { Mic, Send, Bot } from "lucide-react"
+import { Mic, Send, Bot, User, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -14,10 +14,53 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { BotIcon } from "./icons"
+import { aiSearchForSpecialists } from "@/ai/ai-assisted-search"
+import { ScrollArea } from "./ui/scroll-area"
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 
+interface Message {
+  role: "user" | "assistant"
+  content: string
+}
 
 export function Chatbot() {
   const [isOpen, setIsOpen] = useState(false)
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: "assistant",
+      content: "Hello! How can I help you today? Feel free to describe your symptoms.",
+    },
+  ])
+  const [input, setInput] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!input.trim()) return
+
+    const userMessage: Message = { role: "user", content: input }
+    setMessages((prev) => [...prev, userMessage])
+    setInput("")
+    setLoading(true)
+
+    try {
+      const { specialists } = await aiSearchForSpecialists({ query: input })
+      let assistantMessageContent = ""
+      if (specialists && specialists.length > 0) {
+        assistantMessageContent = `Based on your symptoms, I suggest consulting one of the following specialists: ${specialists.join(", ")}. Would you like to see a list of available doctors?`
+      } else {
+        assistantMessageContent = "I couldn't determine a specialty based on your symptoms. Could you please provide more details?"
+      }
+      const assistantMessage: Message = { role: "assistant", content: assistantMessageContent }
+      setMessages((prev) => [...prev, assistantMessage])
+    } catch (error) {
+      console.error("AI search failed:", error)
+      const errorMessage: Message = { role: "assistant", content: "I'm sorry, but I encountered an error. Please try again." }
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <>
@@ -37,37 +80,56 @@ export function Chatbot() {
               Anand - Your AI Health Assistant
             </DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="h-64 overflow-y-auto rounded-md border p-4 space-y-4">
-              {/* Chat messages will appear here */}
-              <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  <BotIcon className="h-5 w-5" />
+          <ScrollArea className="h-80 w-full pr-4">
+             <div className="space-y-4">
+              {messages.map((message, index) => (
+                <div key={index} className={`flex items-start gap-3 ${message.role === "user" ? "justify-end" : ""}`}>
+                  {message.role === "assistant" && (
+                     <Avatar className="h-8 w-8">
+                        <AvatarFallback><BotIcon className="h-5 w-5" /></AvatarFallback>
+                    </Avatar>
+                  )}
+                  <div className={`rounded-lg p-3 text-sm ${message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
+                    <p>{message.content}</p>
+                  </div>
+                   {message.role === "user" && (
+                    <Avatar className="h-8 w-8">
+                        <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                    </Avatar>
+                  )}
                 </div>
-                <div className="rounded-lg bg-muted p-3">
-                  <p className="text-sm">
-                    Hello! How can I help you today? Feel free to describe your symptoms.
-                  </p>
+              ))}
+               {loading && (
+                <div className="flex items-start gap-3">
+                   <Avatar className="h-8 w-8">
+                        <AvatarFallback><BotIcon className="h-5 w-5" /></AvatarFallback>
+                    </Avatar>
+                  <div className="rounded-lg bg-muted p-3">
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
-          </div>
+          </ScrollArea>
           <DialogFooter>
-            <div className="flex w-full items-center gap-2">
+            <form onSubmit={handleSendMessage} className="flex w-full items-center gap-2">
               <Input
                 id="chat-message"
                 placeholder="Type your message or symptoms..."
                 className="flex-1"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                disabled={loading}
               />
-               <Button type="button" size="icon" variant="outline">
+               <Button type="button" size="icon" variant="outline" disabled={loading}>
                 <Mic className="h-4 w-4" />
                 <span className="sr-only">Use Microphone</span>
               </Button>
-              <Button type="submit" size="icon">
+              <Button type="submit" size="icon" disabled={loading}>
                 <Send className="h-4 w-4" />
                 <span className="sr-only">Send</span>
               </Button>
-            </div>
+            </form>
           </DialogFooter>
         </DialogContent>
       </Dialog>
