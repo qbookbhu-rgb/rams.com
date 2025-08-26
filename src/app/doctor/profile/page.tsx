@@ -4,7 +4,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -29,6 +29,7 @@ import { Header } from "@/components/header"
 
 const profileFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
+  photo: z.any().optional(),
   clinicName: z.string().min(2, "Clinic name must be at least 2 characters."),
   qualification: z.string().min(2, "Qualification is required."),
   specialization: z.string().min(2, "Specialization is required."),
@@ -38,6 +39,7 @@ const profileFormSchema = z.object({
   location: z.string().min(3, "Location is required."),
   availableSlots: z.string().min(3, "Available slots are required."),
   bio: z.string().max(280, "Bio cannot be longer than 280 characters.").optional(),
+  certificate: z.any().optional(),
 })
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
@@ -82,6 +84,25 @@ export default function DoctorProfilePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                   <div className="flex items-center gap-4">
+                      <Avatar className="h-20 w-20">
+                        <AvatarImage src="https://i.pravatar.cc/150?u=a042581f4e29026704e" />
+                        <AvatarFallback>DR</AvatarFallback>
+                      </Avatar>
+                      <FormField
+                        control={form.control}
+                        name="photo"
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormLabel>Profile Photo</FormLabel>
+                            <FormControl>
+                              <Input type="file" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   <FormField
                     control={form.control}
                     name="name"
@@ -222,6 +243,22 @@ export default function DoctorProfilePage() {
                       </FormItem>
                     )}
                   />
+                   <FormField
+                      control={form.control}
+                      name="certificate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Upload Registration Certificate</FormLabel>
+                          <FormControl>
+                            <Input type="file" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Upload a scan of your medical registration certificate.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                 </CardContent>
                 <CardFooter className="border-t px-6 py-4">
                   <Button type="submit">Save Changes</Button>

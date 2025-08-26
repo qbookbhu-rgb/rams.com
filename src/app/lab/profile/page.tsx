@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -30,8 +31,13 @@ import { Header } from "@/components/header"
 
 const profileFormSchema = z.object({
   labName: z.string().min(2, "Lab name must be at least 2 characters."),
+  technicianName: z.string().min(2, "Technician name is required."),
+  photo: z.any().optional(),
   address: z.string().min(10, "Address is required."),
   registrationID: z.string().min(5, "Registration ID is required."),
+  services: z.string().min(5, "Services are required."),
+  charges: z.string().min(1, "Charges are required."),
+  certificate: z.any().optional(),
   homeCollection: z.boolean().default(false),
 })
 
@@ -39,8 +45,11 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>
 
 const defaultValues: Partial<ProfileFormValues> = {
   labName: "City Diagnostics",
+  technicianName: "Sanjay Verma",
   address: "Godowlia, Varanasi",
   registrationID: "REG4567",
+  services: "Blood Test, X-Ray, MRI",
+  charges: "Blood Test: ₹200, X-Ray: ₹500",
   homeCollection: true,
 }
 
@@ -71,6 +80,25 @@ export default function LabProfilePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  <div className="flex items-center gap-4">
+                      <Avatar className="h-20 w-20">
+                        <AvatarImage src="https://i.pravatar.cc/150?u=lab" />
+                        <AvatarFallback>LT</AvatarFallback>
+                      </Avatar>
+                      <FormField
+                        control={form.control}
+                        name="photo"
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormLabel>Technician/Lab Photo</FormLabel>
+                            <FormControl>
+                              <Input type="file" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   <FormField
                     control={form.control}
                     name="labName"
@@ -79,6 +107,19 @@ export default function LabProfilePage() {
                         <FormLabel>Lab/Center Name</FormLabel>
                         <FormControl>
                           <Input placeholder="Your lab's name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                    control={form.control}
+                    name="technicianName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Technician Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Technician's full name" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -117,6 +158,52 @@ export default function LabProfilePage() {
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="services"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Services Offered</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Blood Test, X-Ray, MRI" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="charges"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Charges for Different Tests</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="e.g., Blood Test: ₹200, X-Ray: ₹500"
+                            className="resize-none"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                   <FormField
+                      control={form.control}
+                      name="certificate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Upload Lab Certificate</FormLabel>
+                          <FormControl>
+                            <Input type="file" {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Upload a scan of your lab's registration certificate.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   <FormField
                     control={form.control}
                     name="homeCollection"

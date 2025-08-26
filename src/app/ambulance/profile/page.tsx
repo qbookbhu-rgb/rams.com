@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -36,12 +37,15 @@ import { Header } from "@/components/header"
 
 const profileFormSchema = z.object({
   driverName: z.string().min(2, "Driver name must be at least 2 characters."),
+  photo: z.any().optional(),
   numberPlate: z.string().min(5, "Number plate is required."),
   vehicleType: z.string({
     required_error: "Please select a vehicle type.",
   }),
   charges: z.string().min(1, "Charges are required."),
   status: z.boolean().default(false).describe("Online/Offline status"),
+  contact: z.string().min(10, "Contact number must be at least 10 digits."),
+  serviceArea: z.string().min(3, "Service area is required."),
 })
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
@@ -52,6 +56,8 @@ const defaultValues: Partial<ProfileFormValues> = {
   vehicleType: "ICU Ambulance",
   charges: "₹25/km",
   status: true,
+  contact: "9876543210",
+  serviceArea: "Varanasi"
 }
 
 export default function AmbulanceProfilePage() {
@@ -81,14 +87,33 @@ export default function AmbulanceProfilePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  <div className="flex items-center gap-4">
+                      <Avatar className="h-20 w-20">
+                        <AvatarImage src="https://i.pravatar.cc/150?u=ambulance" />
+                        <AvatarFallback>AD</AvatarFallback>
+                      </Avatar>
+                      <FormField
+                        control={form.control}
+                        name="photo"
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormLabel>Driver/Service Photo</FormLabel>
+                            <FormControl>
+                              <Input type="file" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   <FormField
                     control={form.control}
                     name="driverName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Driver Name</FormLabel>
+                        <FormLabel>Driver/Service Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Driver's full name" {...field} />
+                          <Input placeholder="Driver or service name" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -122,9 +147,36 @@ export default function AmbulanceProfilePage() {
                           <SelectContent>
                             <SelectItem value="Basic">Basic</SelectItem>
                             <SelectItem value="ICU Ambulance">ICU Ambulance</SelectItem>
+                            <SelectItem value="Ventilator">Ventilator</SelectItem>
                             <SelectItem value="Cardiac">Cardiac</SelectItem>
                           </SelectContent>
                         </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="serviceArea"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Service Area / City</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Varanasi" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="contact"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Contact Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your contact number" {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}

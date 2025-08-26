@@ -1,3 +1,4 @@
+
 "use client"
 
 import Image from "next/image"
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/carousel"
 import { Header } from "@/components/header"
 import { QrCodeIcon } from "@/components/icons"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const quickAccessItems = [
   {
@@ -164,7 +166,10 @@ export default function PatientDashboard() {
                 My Health Card
               </h2>
               <Card className="flex flex-col items-center justify-center p-6 text-center shadow-lg">
-                <HeartPulse className="h-12 w-12 text-primary mb-4" />
+                <Avatar className="w-24 h-24 mb-4">
+                  <AvatarImage src="https://i.pravatar.cc/150?u=patient" alt="Patient" />
+                  <AvatarFallback>P</AvatarFallback>
+                </Avatar>
                 <p className="font-semibold">Patient Name</p>
                 <p className="text-sm text-muted-foreground mb-4">ID: RAMS12345</p>
                 <div className="rounded-lg bg-white p-2">
