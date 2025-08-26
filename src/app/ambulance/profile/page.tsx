@@ -226,7 +226,6 @@ export default function AmbulanceProfilePage() {
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            aria-readonly
                           />
                         </FormControl>
                       </FormItem>
