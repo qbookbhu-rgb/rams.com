@@ -12,8 +12,9 @@ import {
   Star,
   Video,
 } from "lucide-react"
-import { collection, getDocs, query, where } from "firebase/firestore"
-import { db } from "@/lib/firebase"
+import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore"
+import { db, auth } from "@/lib/firebase"
+import type { Doctor } from "@/lib/types/doctors"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -42,6 +43,7 @@ import {
 } from "@/components/ui/table"
 import { Header } from "@/components/header"
 import { Skeleton } from "@/components/ui/skeleton"
+import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth"
 
 interface Patient {
   uid: string;
@@ -67,6 +69,7 @@ const reviews = [
 ]
 
 export default function DoctorDashboard() {
+  const [doctorData, setDoctorData] = useState<Doctor | null>(null);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,23 +79,39 @@ export default function DoctorDashboard() {
   const netPayout = totalEarnings - commissionPaid
 
   useEffect(() => {
-    const fetchPatients = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const q = query(collection(db, "users"), where("role", "==", "patient"));
-        const querySnapshot = await getDocs(q);
-        const patientsData = querySnapshot.docs.map(doc => doc.data() as Patient);
-        setPatients(patientsData);
-      } catch (e) {
-        console.error("Error fetching patients: ", e);
-        setError("Failed to load patient data.");
-      } finally {
+     const unsubscribe = onAuthStateChanged(auth, (user: FirebaseUser | null) => {
+      if (user) {
+        const fetchData = async () => {
+          setLoading(true);
+          setError(null);
+          try {
+            // Fetch doctor's profile
+            const docRef = doc(db, "doctors", user.uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+              setDoctorData({ id: docSnap.id, ...docSnap.data() } as Doctor);
+            } else {
+               setDoctorData(null); // Or handle case where profile is not created
+            }
+
+            // Fetch patients
+            const q = query(collection(db, "users"), where("role", "==", "patient"));
+            const querySnapshot = await getDocs(q);
+            const patientsData = querySnapshot.docs.map(doc => doc.data() as Patient);
+            setPatients(patientsData);
+          } catch (e) {
+            console.error("Error fetching data: ", e);
+            setError("Failed to load dashboard data.");
+          } finally {
+            setLoading(false);
+          }
+        };
+        fetchData();
+      } else {
         setLoading(false);
       }
-    };
-
-    fetchPatients();
+    });
+     return () => unsubscribe();
   }, []);
 
   return (
@@ -110,14 +129,23 @@ export default function DoctorDashboard() {
               <Card>
                 <CardHeader className="flex flex-row items-start gap-4">
                   <Avatar className="h-20 w-20 border">
-                    <AvatarImage src="https://i.pravatar.cc/150?u=a042581f4e29026704e" />
+                    <AvatarImage src={`https://i.pravatar.cc/150?u=${doctorData?.userId}`} />
                     <AvatarFallback>DR</AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <CardTitle className="text-2xl">Dr. Emily Carter</CardTitle>
-                    <CardDescription>
-                      MBBS, MD (Cardiology) | Cardiologist
-                    </CardDescription>
+                     {loading ? (
+                       <div className="space-y-2">
+                         <Skeleton className="h-7 w-48" />
+                         <Skeleton className="h-5 w-64" />
+                       </div>
+                     ) : (
+                      <>
+                        <CardTitle className="text-2xl">{doctorData?.name || "Doctor Name"}</CardTitle>
+                        <CardDescription>
+                         {doctorData ? `${doctorData.qualification} | ${doctorData.specialization}` : "Complete your profile"}
+                        </CardDescription>
+                      </>
+                     )}
                     <div className="mt-2 flex items-center gap-2">
                       <Button size="sm" variant="outline">
                         <MessageSquare className="mr-2 h-4 w-4" />
@@ -148,9 +176,9 @@ export default function DoctorDashboard() {
                 <CardContent>
                   {loading && (
                      <div className="space-y-2">
-                        <Skeleton className="h-8 w-full" />
-                        <Skeleton className="h-8 w-full" />
-                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
                      </div>
                   )}
                   {error && <p className="text-center text-red-500">{error}</p>}
@@ -183,7 +211,7 @@ export default function DoctorDashboard() {
                   <CardDescription>
                     Review your earnings and withdraw.
                   </CardDescription>
-                </CardHeader>
+                </Header>
                 <CardContent className="grid gap-3 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Total Bookings</span>
@@ -290,3 +318,5 @@ function PatientTable({ patients }: { patients: Patient[] }) {
     </Table>
   );
 }
+
+    
