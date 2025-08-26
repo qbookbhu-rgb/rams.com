@@ -1,3 +1,4 @@
+
 "use client"
 
 import Image from "next/image"
@@ -89,6 +90,10 @@ const reviews = [
 ]
 
 export default function DoctorDashboard() {
+  const totalEarnings = 5230.00
+  const commissionPaid = totalEarnings * 0.05
+  const netPayout = totalEarnings - commissionPaid
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
@@ -179,20 +184,26 @@ export default function DoctorDashboard() {
                     Review your earnings and withdraw.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="grid gap-4">
+                <CardContent className="grid gap-3 text-sm">
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Total Earnings</span>
-                    <span className="font-semibold">$5,230.00</span>
+                    <span className="text-muted-foreground">Total Bookings</span>
+                    <span className="font-semibold">₹{totalEarnings.toFixed(2)}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Last Payout</span>
-                    <span>$1,200.00</span>
+                    <span className="text-muted-foreground">Commission Paid (5%)</span>
+                    <span className="font-semibold text-red-600">- ₹{commissionPaid.toFixed(2)}</span>
                   </div>
-                  <Button className="w-full">
+                  <Separator />
+                  <div className="flex items-center justify-between font-bold">
+                    <span className="text-muted-foreground">Net Payout</span>
+                    <span className="text-lg">₹{netPayout.toFixed(2)}</span>
+                  </div>
+
+                </CardContent>
+                <CardFooter className="flex-col items-start gap-2">
+                   <Button className="w-full">
                     <CircleDollarSign className="mr-2 h-4 w-4" /> Withdraw Request
                   </Button>
-                </CardContent>
-                <CardFooter>
                   <p className="text-xs text-muted-foreground">Next payout on 1st August 2024.</p>
                 </CardFooter>
               </Card>

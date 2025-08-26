@@ -17,14 +17,14 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from "@/components/ui/radio-group"
+import { Separator } from "@/components/ui/separator"
 
 const doctors = [
   {
     name: "Dr. Ramesh Gupta",
     specialization: "Cardiologist",
     experience: "15 years",
-    onlineFee: 800,
-    offlineFee: 1000,
+    consultationFee: 1000,
     clinicName: "Gupta Heart Clinic",
     timings: "10 AM - 1 PM",
     avatar: "https://i.pravatar.cc/150?u=ramesh",
@@ -33,8 +33,7 @@ const doctors = [
     name: "Dr. Priya Sharma",
     specialization: "Dermatologist",
     experience: "8 years",
-    onlineFee: 600,
-    offlineFee: 750,
+    consultationFee: 750,
     clinicName: "Skin & Hair Clinic",
     timings: "11 AM - 2 PM",
     avatar: "https://i.pravatar.cc/150?u=priya",
@@ -43,8 +42,7 @@ const doctors = [
     name: "Dr. Vikram Singh",
     specialization: "Orthopedic Surgeon",
     experience: "20 years",
-    onlineFee: 900,
-    offlineFee: 1200,
+    consultationFee: 1200,
     clinicName: "Bone & Joint Center",
     timings: "4 PM - 7 PM",
     avatar: "https://i.pravatar.cc/150?u=vikram",
@@ -53,8 +51,7 @@ const doctors = [
     name: "Dr. Anjali Desai",
     specialization: "Pediatrician",
     experience: "12 years",
-    onlineFee: 500,
-    offlineFee: 600,
+    consultationFee: 600,
     clinicName: "Child Health Care",
     timings: "9 AM - 12 PM",
     avatar: "https://i.pravatar.cc/150?u=anjali",
@@ -63,8 +60,7 @@ const doctors = [
     name: "Dr. Sanjay Patel",
     specialization: "General Physician",
     experience: "18 years",
-    onlineFee: 400,
-    offlineFee: 500,
+    consultationFee: 500,
     clinicName: "Family Health Clinic",
     timings: "Mon-Sat, 9 AM - 6 PM",
     avatar: "https://i.pravatar.cc/150?u=sanjay",
@@ -114,33 +110,45 @@ export default function ConsultDoctorPage() {
             </CardContent>
           </Card>
 
-          {doctors.map((doctor, index) => (
-            <Card key={index} className="overflow-hidden">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-4">
-                  <Avatar className="h-24 w-24 border">
-                    <AvatarImage src={doctor.avatar} />
-                    <AvatarFallback>{doctor.name.charAt(4)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 space-y-1">
-                    <h2 className="text-lg font-bold">{doctor.name}</h2>
-                    <p className="text-muted-foreground">{doctor.specialization}</p>
-                     <p className="text-sm text-muted-foreground">{doctor.experience} experience</p>
-                    <div className="flex items-baseline gap-2 font-semibold">
-                      <span className="text-xl">₹{doctor.onlineFee}</span>
-                      <span className="text-sm text-muted-foreground">Online</span>
+          {doctors.map((doctor, index) => {
+            const commission = doctor.consultationFee * 0.05
+            const totalFee = doctor.consultationFee + commission
+
+            return (
+              <Card key={index} className="overflow-hidden">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-4">
+                    <Avatar className="h-24 w-24 border">
+                      <AvatarImage src={doctor.avatar} />
+                      <AvatarFallback>{doctor.name.charAt(4)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-1">
+                      <h2 className="text-lg font-bold">{doctor.name}</h2>
+                      <p className="text-muted-foreground">{doctor.specialization}</p>
+                       <p className="text-sm text-muted-foreground">{doctor.experience} experience</p>
+                       <p className="text-sm font-medium">{doctor.clinicName}</p>
+                       <p className="text-xs text-muted-foreground">{doctor.timings}</p>
                     </div>
-                     <div className="flex items-baseline gap-2 font-semibold">
-                      <span className="text-xl">₹{doctor.offlineFee}</span>
-                      <span className="text-sm text-muted-foreground">Offline</span>
-                    </div>
-                    <p className="text-sm font-medium">{doctor.clinicName}</p>
-                     <p className="text-xs text-muted-foreground">{doctor.timings}</p>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <Separator className="my-4" />
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Doctor Fee</span>
+                      <span className="font-medium">₹{doctor.consultationFee.toFixed(2)}</span>
+                    </div>
+                     <div className="flex justify-between">
+                      <span className="text-muted-foreground">Company Commission (5%)</span>
+                      <span className="font-medium">₹{commission.toFixed(2)}</span>
+                    </div>
+                     <div className="flex justify-between font-bold text-base">
+                      <span>You Pay</span>
+                      <span>₹{totalFee.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
       </main>
       <footer className="sticky bottom-0 z-10 border-t bg-background p-4">
