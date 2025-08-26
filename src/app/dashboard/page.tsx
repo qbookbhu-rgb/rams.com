@@ -10,6 +10,7 @@ import {
   Pill,
   Stethoscope,
   Wind,
+  AlertTriangle,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -51,9 +52,15 @@ const quickAccessItems = [
     href: "/lab-tests",
   },
   {
-    title: "Ambulance & SOS",
+    title: "Ambulance Service",
     icon: Ambulance,
     description: "24/7 emergency ambulance service.",
+    href: "/ambulance-sos",
+  },
+   {
+    title: "SOS",
+    icon: AlertTriangle,
+    description: "Immediate emergency assistance.",
     href: "/ambulance-sos",
   },
   {
@@ -104,7 +111,7 @@ export default function PatientDashboard() {
             <h2 className="text-2xl font-semibold tracking-tight mb-4 font-headline">
               Quick Access
             </h2>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-6">
               {quickAccessItems.map((item) => (
                 <Card
                   key={item.title}
