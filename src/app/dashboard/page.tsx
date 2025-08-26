@@ -48,7 +48,7 @@ const quickAccessItems = [
     title: "Diagnostic Tests",
     icon: FlaskConical,
     description: "Book lab tests from home.",
-    href: "#",
+    href: "/lab-tests",
   },
   {
     title: "Ambulance & SOS",
