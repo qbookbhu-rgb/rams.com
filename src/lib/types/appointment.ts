@@ -14,3 +14,5 @@ export interface Appointment {
     status: 'confirmed' | 'cancelled' | 'completed';
     createdAt: any; // Firestore timestamp
 }
+
+    
