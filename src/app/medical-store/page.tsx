@@ -3,6 +3,7 @@
 
 import Link from "next/link"
 import {
+  CircleDollarSign,
   MoreVertical,
   Package,
   PackageCheck,
@@ -20,6 +21,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -39,6 +41,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Separator } from "@/components/ui/separator"
 
 const orders = [
   {
@@ -87,6 +90,9 @@ const reviews = [
 ]
 
 export default function MedicalStoreDashboard() {
+    const totalEarnings = 45000.00
+    const commissionPaid = totalEarnings * 0.05
+    const netPayout = totalEarnings - commissionPaid
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
@@ -220,6 +226,35 @@ export default function MedicalStoreDashboard() {
               </Card>
               <Card>
                 <CardHeader>
+                  <CardTitle>Payments</CardTitle>
+                   <CardDescription>
+                    Review your earnings and withdraw.
+                  </CardDescription>
+                </CardHeader>
+                 <CardContent className="grid gap-3 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Total Sales</span>
+                    <span className="font-semibold">₹{totalEarnings.toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Commission Paid (5%)</span>
+                    <span className="font-semibold text-red-600">- ₹{commissionPaid.toFixed(2)}</span>
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between font-bold">
+                    <span className="text-muted-foreground">Net Payout</span>
+                    <span className="text-lg">₹{netPayout.toFixed(2)}</span>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex-col items-start gap-2">
+                   <Button className="w-full">
+                    <CircleDollarSign className="mr-2 h-4 w-4" /> Withdraw Request
+                  </Button>
+                  <p className="text-xs text-muted-foreground">Next payout on 1st August 2024.</p>
+                </CardFooter>
+              </Card>
+              <Card>
+                <CardHeader>
                   <CardTitle>Ratings & Reviews</CardTitle>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center text-yellow-500">
@@ -231,7 +266,7 @@ export default function MedicalStoreDashboard() {
                     </div>
                     <span className="font-semibold">4.8 (52 Reviews)</span>
                   </div>
-                </CardHeader>
+                </Header>
                 <CardContent className="grid gap-6">
                   {reviews.map((review, index) => (
                     <div key={index} className="flex gap-4">
