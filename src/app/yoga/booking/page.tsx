@@ -61,7 +61,7 @@ export default function YogaBookingPage() {
   const filteredCenters = yogaCenters.filter(center => 
       classType === 'all' || 
       (classType === 'online' && center.onlineClasses) ||
-      (classType === 'offline' && !center.onlineClasses)
+      (classType === 'offline' && center.onlineClasses === false)
   )
 
   return (
@@ -164,8 +164,7 @@ export default function YogaBookingPage() {
                         <span>{center.fee}</span>
                      </div>
                       <div className="flex items-center gap-2">
-                         {center.onlineClasses && <Video className="h-4 w-4 text-muted-foreground" />}
-                         {!center.onlineClasses && <Users className="h-4 w-4 text-muted-foreground" />}
+                         {center.onlineClasses ? <Video className="h-4 w-4 text-muted-foreground" /> : <Users className="h-4 w-4 text-muted-foreground" />}
                          <span>{center.onlineClasses ? "Online & Offline" : "Offline Only"}</span>
                       </div>
                        <div className="flex items-center gap-2 font-semibold text-amber-500">
@@ -186,5 +185,3 @@ export default function YogaBookingPage() {
     </div>
   )
 }
-
-    
