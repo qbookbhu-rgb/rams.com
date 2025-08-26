@@ -1,6 +1,17 @@
+
 "use client"
 
+import { Button } from "@/components/ui/button"
 import { Header } from "@/components/header"
+import { Pencil } from "lucide-react"
+import Link from "next/link"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 export default function LabDashboard() {
   return (
@@ -16,6 +27,22 @@ export default function LabDashboard() {
               Manage your lab services.
             </p>
           </div>
+           <Card className="max-w-sm">
+              <CardHeader>
+                <CardTitle>Lab Details</CardTitle>
+                <CardDescription>City Diagnostics</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Registration ID: REG4567
+                </p>
+                  <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
+                    <Link href="/lab/profile">
+                      <Pencil className="mr-2 h-4 w-4" /> Edit Lab Info
+                    </Link>
+                  </Button>
+              </CardContent>
+            </Card>
         </div>
       </main>
     </div>

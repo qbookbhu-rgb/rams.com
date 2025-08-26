@@ -1,5 +1,7 @@
+
 "use client"
 
+import Link from "next/link"
 import {
   MoreVertical,
   Package,
@@ -8,6 +10,7 @@ import {
   PlusCircle,
   Star,
   Truck,
+  Pencil,
 } from "lucide-react"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -208,8 +211,10 @@ export default function MedicalStoreDashboard() {
                   <p className="text-sm text-muted-foreground">
                     License: DL12345XYZ
                   </p>
-                  <Button variant="outline" size="sm" className="mt-4 w-full">
-                    Edit Store Info
+                   <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
+                     <Link href="/medical-store/profile">
+                        <Pencil className="mr-2 h-4 w-4" /> Edit Store Info
+                      </Link>
                   </Button>
                 </CardContent>
               </Card>

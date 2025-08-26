@@ -1,6 +1,17 @@
+
 "use client"
 
+import { Button } from "@/components/ui/button"
 import { Header } from "@/components/header"
+import { Pencil } from "lucide-react"
+import Link from "next/link"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 export default function AmbulanceDashboard() {
   return (
@@ -16,6 +27,22 @@ export default function AmbulanceDashboard() {
               Manage your ambulance service.
             </p>
           </div>
+          <Card className="max-w-sm">
+            <CardHeader>
+              <CardTitle>Driver & Vehicle Details</CardTitle>
+              <CardDescription>Ramesh Kumar - UP65AB1234</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Vehicle Type: ICU Ambulance
+              </p>
+              <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
+                <Link href="/ambulance/profile">
+                  <Pencil className="mr-2 h-4 w-4" /> Edit Vehicle Info
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>
