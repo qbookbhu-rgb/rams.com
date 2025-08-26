@@ -66,6 +66,7 @@ export default function YogaProfilePage() {
 
   async function onSubmit(data: ProfileFormValues) {
     try {
+      // Omit photo for now as it requires file storage.
       const { photo, ...formData } = data;
       await updateYogaProfile(formData)
       toast({
