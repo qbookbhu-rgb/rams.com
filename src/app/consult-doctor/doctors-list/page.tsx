@@ -47,9 +47,12 @@ export default function DoctorsListPage() {
 
   const getAvailableSlotsText = (slots: Doctor['availableTimeSlots']) => {
     if (!slots) return 'No slots available';
-    const weekdayText = `Weekdays: ${slots.weekdays.morning}, ${slots.weekdays.evening}`;
-    const weekendText = `Weekends: ${slots.weekends.morning}, ${slots.weekends.evening}`;
-    return `${weekdayText} | ${weekendText}`;
+    let availableSlots: string[] = [];
+    if (slots.weekdays?.morning) availableSlots.push(`Weekdays: ${slots.weekdays.morning}`);
+    if (slots.weekdays?.evening) availableSlots.push(slots.weekdays.evening);
+    if (slots.weekends?.morning) availableSlots.push(` | Weekends: ${slots.weekends.morning}`);
+    if (slots.weekends?.evening) availableSlots.push(slots.weekends.evening);
+    return availableSlots.join(', ');
   };
 
 
@@ -83,10 +86,19 @@ export default function DoctorsListPage() {
                     </div>
                   </div>
                   <Separator className="my-4" />
-                   <div className="space-y-2">
-                      <Skeleton className="h-4 w-full" />
-                      <Skeleton className="h-4 w-full" />
-                      <Skeleton className="h-5 w-full" />
+                   <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <Skeleton className="h-4 w-1/4" />
+                        <Skeleton className="h-4 w-1/4" />
+                      </div>
+                       <div className="flex justify-between">
+                        <Skeleton className="h-4 w-1/3" />
+                        <Skeleton className="h-4 w-1/4" />
+                      </div>
+                       <div className="flex justify-between">
+                        <Skeleton className="h-5 w-1/3" />
+                        <Skeleton className="h-5 w-1/4" />
+                      </div>
                     </div>
                 </CardContent>
               </Card>
