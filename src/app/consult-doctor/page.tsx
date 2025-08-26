@@ -122,47 +122,44 @@ export default function ConsultDoctorPage() {
             const totalFee = doctor.consultationFee + commission
 
             return (
-              <Card key={doctor.id} className="overflow-hidden">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
-                    <Avatar className="h-24 w-24 border">
-                      <AvatarImage src={`https://i.pravatar.cc/150?u=${doctor.id}`} />
-                      <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 space-y-1">
-                      <h2 className="text-lg font-bold">{doctor.name}</h2>
-                      <p className="text-muted-foreground">{doctor.specialization}</p>
-                       <p className="text-sm text-muted-foreground">{doctor.experience} years experience</p>
-                       <p className="text-sm font-medium">{doctor.clinicName}</p>
-                       <p className="text-xs text-muted-foreground">{doctor.availableSlots}</p>
+              <Link href={`/consult-doctor/book/${doctor.id}`} key={doctor.id} className="block hover:bg-muted/50 rounded-lg">
+                <Card className="overflow-hidden w-full">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-4">
+                      <Avatar className="h-24 w-24 border">
+                        <AvatarImage src={`https://i.pravatar.cc/150?u=${doctor.id}`} />
+                        <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 space-y-1">
+                        <h2 className="text-lg font-bold">{doctor.name}</h2>
+                        <p className="text-muted-foreground">{doctor.specialization}</p>
+                        <p className="text-sm text-muted-foreground">{doctor.experience} years experience</p>
+                        <p className="text-sm font-medium">{doctor.clinicName}</p>
+                        <p className="text-xs text-muted-foreground">{doctor.availableSlots}</p>
+                      </div>
                     </div>
-                  </div>
-                  <Separator className="my-4" />
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Doctor Fee</span>
-                      <span className="font-medium">₹{doctor.consultationFee.toFixed(2)}</span>
+                    <Separator className="my-4" />
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Doctor Fee</span>
+                        <span className="font-medium">₹{doctor.consultationFee.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Company Commission (5%)</span>
+                        <span className="font-medium">₹{commission.toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between font-bold text-base">
+                        <span>You Pay</span>
+                        <span>₹{totalFee.toFixed(2)}</span>
+                      </div>
                     </div>
-                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Company Commission (5%)</span>
-                      <span className="font-medium">₹{commission.toFixed(2)}</span>
-                    </div>
-                     <div className="flex justify-between font-bold text-base">
-                      <span>You Pay</span>
-                      <span>₹{totalFee.toFixed(2)}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </Link>
             )
           })}
         </div>
       </main>
-      <footer className="sticky bottom-0 z-10 border-t bg-background p-4">
-        <div className="mx-auto max-w-md">
-          <Button className="w-full" size="lg">Book Appointment</Button>
-        </div>
-      </footer>
     </div>
   )
 }
