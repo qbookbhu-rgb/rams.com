@@ -27,6 +27,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Header } from "@/components/header"
+import { useToast } from "@/hooks/use-toast"
+
+// TODO: Import a server action to save the data
 
 const profileFormSchema = z.object({
   storeName: z.string().min(2, "Store name must be at least 2 characters."),
@@ -51,15 +54,29 @@ const defaultValues: Partial<ProfileFormValues> = {
 }
 
 export default function MedicalStoreProfilePage() {
+  const { toast } = useToast()
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues,
     mode: "onChange",
   })
 
-  function onSubmit(data: ProfileFormValues) {
-    // TODO: Save data to Firebase
-    console.log(data)
+  async function onSubmit(data: ProfileFormValues) {
+    try {
+      // TODO: Call the server action to save the data to Firestore
+      console.log("Form data submitted:", data)
+      toast({
+        title: "Profile Updated",
+        description: "Your store information has been saved successfully.",
+      })
+    } catch (error) {
+      console.error("Failed to update profile:", error)
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: "Could not save your information. Please try again.",
+      })
+    }
   }
 
   return (
