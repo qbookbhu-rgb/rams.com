@@ -19,9 +19,9 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased medical-background flex flex-col min-h-screen">
+      <body className="font-body antialiased bg-background flex flex-col min-h-screen">
         <div className="flex-grow">
           {children}
         </div>
