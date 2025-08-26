@@ -44,6 +44,7 @@ import {
 import { Header } from "@/components/header"
 import { Skeleton } from "@/components/ui/skeleton"
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth"
+import { Appointment } from "@/lib/types/appointment"
 
 interface Patient {
   uid: string;
@@ -71,6 +72,7 @@ const reviews = [
 export default function DoctorDashboard() {
   const [doctorData, setDoctorData] = useState<Doctor | null>(null);
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -94,11 +96,18 @@ export default function DoctorDashboard() {
                setDoctorData(null); // Or handle case where profile is not created
             }
 
-            // Fetch patients
-            const q = query(collection(db, "users"), where("role", "==", "patient"));
-            const querySnapshot = await getDocs(q);
-            const patientsData = querySnapshot.docs.map(doc => ({...doc.data(), uid: doc.id }) as Patient);
+            // Fetch patients (this is a simplified example, in a real app you'd fetch patients with appointments)
+            const patientsQuery = query(collection(db, "users"), where("role", "==", "patient"));
+            const patientsSnapshot = await getDocs(patientsQuery);
+            const patientsData = patientsSnapshot.docs.map(doc => ({...doc.data(), uid: doc.id }) as Patient);
             setPatients(patientsData);
+            
+            // Fetch appointments for this doctor
+            const appointmentsQuery = query(collection(db, "appointments"), where("doctorId", "==", user.uid));
+            const appointmentsSnapshot = await getDocs(appointmentsQuery);
+            const appointmentsData = appointmentsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }) as Appointment);
+            setAppointments(appointmentsData);
+
           } catch (e) {
             console.error("Error fetching data: ", e);
             setError("Failed to load dashboard data.");
@@ -169,9 +178,9 @@ export default function DoctorDashboard() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Patient List</CardTitle>
+                  <CardTitle>Upcoming Appointments</CardTitle>
                   <CardDescription>
-                    View and manage your patient records.
+                    Your upcoming patient schedule.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -184,7 +193,7 @@ export default function DoctorDashboard() {
                   )}
                   {error && <p className="text-center text-red-500">{error}</p>}
                   {!loading && !error && (
-                    <PatientTable patients={patients} />
+                    <AppointmentTable appointments={appointments} />
                   )}
                 </CardContent>
               </Card>
@@ -198,7 +207,7 @@ export default function DoctorDashboard() {
                 <CardContent className="grid gap-4">
                     <div className="flex items-center">
                         <Calendar className="h-4 w-4 mr-2" />
-                        <span>3 upcoming appointments</span>
+                        <span>{appointments.length} upcoming appointments</span>
                     </div>
                     <Button className="w-full">
                         <Pencil className="mr-2 h-4 w-4" /> Add / Edit Slots
@@ -279,26 +288,32 @@ export default function DoctorDashboard() {
   )
 }
 
-function PatientTable({ patients }: { patients: Patient[] }) {
+function AppointmentTable({ appointments }: { appointments: Appointment[] }) {
+  if (appointments.length === 0) {
+    return <p className="text-sm text-muted-foreground text-center">No upcoming appointments.</p>;
+  }
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>Patient</TableHead>
-          <TableHead className="hidden sm:table-cell">Joined On</TableHead>
+          <TableHead>Date</TableHead>
+          <TableHead>Time</TableHead>
+          <TableHead>Mode</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {patients.map((patient) => (
-          <TableRow key={patient.uid}>
+        {appointments.map((appointment) => (
+          <TableRow key={appointment.id}>
             <TableCell>
-              <div className="font-medium">{patient.email.split('@')[0]}</div>
-              <div className="text-sm text-muted-foreground">{patient.email}</div>
+              <div className="font-medium">{appointment.patientName}</div>
+              <div className="text-sm text-muted-foreground">{appointment.patientEmail}</div>
             </TableCell>
-            <TableCell className="hidden sm:table-cell">
-              {patient.createdAt?.toDate().toLocaleDateString() ?? 'N/A'}
-            </TableCell>
+            <TableCell>{new Date(appointment.appointmentDate).toLocaleDateString()}</TableCell>
+            <TableCell>{appointment.timeSlot}</TableCell>
+            <TableCell>{appointment.consultationMode}</TableCell>
             <TableCell className="text-right">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -309,7 +324,7 @@ function PatientTable({ patients }: { patients: Patient[] }) {
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem>View Details</DropdownMenuItem>
                   <DropdownMenuItem>Start Chat</DropdownMenuItem>
-                  <DropdownMenuItem>Create Invoice</DropdownMenuItem>
+                  <DropdownMenuItem>Start Video Call</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </TableCell>
@@ -317,5 +332,5 @@ function PatientTable({ patients }: { patients: Patient[] }) {
         ))}
       </TableBody>
     </Table>
-  );
+  )
 }

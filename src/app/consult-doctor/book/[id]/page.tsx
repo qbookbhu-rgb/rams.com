@@ -3,11 +3,13 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowLeft, Calendar as CalendarIcon, Clock, CreditCard, User, Video, Sun, Moon } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { ArrowLeft, Calendar as CalendarIcon, Clock, CreditCard, User, Video, Sun, Moon, Loader2 } from "lucide-react"
 import { doc, getDoc } from "firebase/firestore"
-import { db } from "@/lib/firebase"
+import { db, auth } from "@/lib/firebase"
 import { Doctor } from "@/lib/types/doctors"
-import { format, getDay } from "date-fns"
+import { format, getDay, startOfDay } from "date-fns"
+import { useAuthState } from "react-firebase-hooks/auth"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -29,15 +31,22 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
+import { useToast } from "@/hooks/use-toast"
+import { bookAppointment } from "./actions"
 
 
 export default function BookAppointmentPage({ params }: { params: { id: string } }) {
   const [doctor, setDoctor] = useState<Doctor | null>(null)
   const [loading, setLoading] = useState(true)
+  const [bookingLoading, setBookingLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [consultationMode, setConsultationMode] = useState("offline")
   const [date, setDate] = useState<Date | undefined>(new Date())
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  
+  const [user, authLoading] = useAuthState(auth);
+  const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!params.id) return
@@ -68,6 +77,55 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
     setDate(selectedDate);
     setSelectedTime(null); // Reset time when date changes
   };
+  
+  const handleBooking = async () => {
+    if (!user || !doctor || !date || !selectedTime) {
+         toast({
+            variant: "destructive",
+            title: "Booking Failed",
+            description: "Please make sure you are logged in and have selected a date and time.",
+        });
+        return;
+    }
+    
+    setBookingLoading(true);
+    
+    const commission = doctor.consultationFee * 0.05
+    const totalFee = doctor.consultationFee + commission
+
+    try {
+        await bookAppointment({
+            doctorId: doctor.id,
+            doctorName: doctor.name,
+            patientId: user.uid,
+            patientName: user.displayName || user.email!.split('@')[0],
+            patientEmail: user.email!,
+            appointmentDate: startOfDay(date).toISOString(),
+            timeSlot: selectedTime,
+            consultationMode,
+            consultationFee: doctor.consultationFee,
+            totalFee: totalFee,
+        });
+
+        toast({
+            title: "Appointment Confirmed!",
+            description: `Your booking with ${doctor.name} on ${format(date, "PPP")} at ${selectedTime} is successful.`,
+        });
+
+        router.push('/consult-doctor');
+
+    } catch (err) {
+        console.error("Booking failed:", err);
+        toast({
+            variant: "destructive",
+            title: "Booking Failed",
+            description: "Could not confirm your appointment. Please try again.",
+        });
+    } finally {
+        setBookingLoading(false);
+    }
+  };
+
 
   const renderTimeSlots = () => {
     if (!date || !doctor?.availableTimeSlots) return null;
@@ -110,7 +168,7 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
   };
 
 
-  if (loading) {
+  if (loading || authLoading) {
     return <BookingSkeleton />
   }
 
@@ -222,9 +280,18 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
       </main>
        <footer className="sticky bottom-0 z-10 border-t bg-background p-4">
         <div className="mx-auto max-w-md">
-          <Button className="w-full" size="lg" disabled={!selectedTime}>
-            <CreditCard className="mr-2 h-5 w-5" /> 
-            {selectedTime ? `Confirm & Pay for ${selectedTime}` : 'Select a Time Slot'}
+          <Button className="w-full" size="lg" disabled={!selectedTime || bookingLoading} onClick={handleBooking}>
+            {bookingLoading ? (
+                <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Confirming...
+                </>
+            ) : (
+                <>
+                    <CreditCard className="mr-2 h-5 w-5" /> 
+                    {selectedTime ? `Confirm & Pay for ${selectedTime}` : 'Select a Time Slot'}
+                </>
+            )}
           </Button>
         </div>
       </footer>
