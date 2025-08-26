@@ -406,7 +406,3 @@ function OrderTable({ orders }: { orders: typeof orders }) {
     </Table>
   )
 }
-
-    
-
-    

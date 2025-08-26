@@ -266,5 +266,3 @@ function TripHistoryTable({ trips }: { trips: typeof tripHistory }) {
     </Table>
   );
 }
-
-    
