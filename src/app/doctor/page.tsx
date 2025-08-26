@@ -97,7 +97,7 @@ export default function DoctorDashboard() {
             // Fetch patients
             const q = query(collection(db, "users"), where("role", "==", "patient"));
             const querySnapshot = await getDocs(q);
-            const patientsData = querySnapshot.docs.map(doc => doc.data() as Patient);
+            const patientsData = querySnapshot.docs.map(doc => ({...doc.data(), uid: doc.id }) as Patient);
             setPatients(patientsData);
           } catch (e) {
             console.error("Error fetching data: ", e);
@@ -211,7 +211,7 @@ export default function DoctorDashboard() {
                   <CardDescription>
                     Review your earnings and withdraw.
                   </CardDescription>
-                </Header>
+                </CardHeader>
                 <CardContent className="grid gap-3 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Total Bookings</span>
