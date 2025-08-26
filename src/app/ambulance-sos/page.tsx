@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowLeft, Search, Phone, IndianRupee, MapPin, Loader2 } from "lucide-react"
+import { ArrowLeft, Search, Phone, IndianRupee, MapPin, Loader2, Send } from "lucide-react"
 import { Ambulance } from "@/lib/types/ambulance"
 import { intelligentSos } from "@/ai/sos-flow"
 import { useToast } from "@/hooks/use-toast"
@@ -20,56 +20,69 @@ import {
 } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Input } from "@/components/ui/input"
 
 export default function AmbulanceSosPage() {
   const [ambulances, setAmbulances] = useState<Ambulance[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [emergencyDescription, setEmergencyDescription] = useState("")
+  const [isDescriptionSubmitted, setIsDescriptionSubmitted] = useState(false)
   const { toast } = useToast()
 
-  useEffect(() => {
-    const findAmbulances = () => {
-      if (!navigator.geolocation) {
-        setError("Geolocation is not supported by your browser. We can't find nearby ambulances.")
-        setLoading(false)
-        return
-      }
-
-      setLoading(true)
-      setError(null)
-      
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            const { latitude, longitude } = position.coords
-            const result = await intelligentSos({
-              userLocation: { latitude, longitude },
-            })
-            if (result.ambulances.length === 0) {
-              setError("No available ambulances found near you at the moment.")
-            }
-            setAmbulances(result.ambulances)
-          } catch (e) {
-            console.error("Error fetching ambulances: ", e)
-            setError("AI failed to find ambulances. Please try again later.")
-            toast({
-              variant: "destructive",
-              title: "AI Search Failed",
-              description: "Could not find ambulances. Please try again."
-            })
-          } finally {
-            setLoading(false)
-          }
-        },
-        () => {
-          setError("Unable to retrieve your location. Please enable location services.")
-          setLoading(false)
-        }
-      )
+  const findAmbulances = (description?: string) => {
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser. We can't find nearby ambulances.")
+      setLoading(false)
+      return
     }
 
+    setLoading(true)
+    setError(null)
+    
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords
+          const result = await intelligentSos({
+            userLocation: { latitude, longitude },
+            emergencyDescription: description,
+          })
+          if (result.ambulances.length === 0) {
+            setError("No available ambulances found near you at the moment.")
+          }
+          setAmbulances(result.ambulances)
+        } catch (e) {
+          console.error("Error fetching ambulances: ", e)
+          setError("AI failed to find ambulances. Please try again later.")
+          toast({
+            variant: "destructive",
+            title: "AI Search Failed",
+            description: "Could not find ambulances. Please try again."
+          })
+        } finally {
+          setLoading(false)
+        }
+      },
+      () => {
+        setError("Unable to retrieve your location. Please enable location services.")
+        setLoading(false)
+      }
+    )
+  }
+  
+  useEffect(() => {
     findAmbulances()
-  }, [toast])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  
+  const handleDescriptionSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsDescriptionSubmitted(true)
+    setAmbulances([]) // Clear previous results
+    findAmbulances(emergencyDescription)
+  }
+
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -86,10 +99,32 @@ export default function AmbulanceSosPage() {
       </header>
       <main className="flex-1 p-4">
         <div className="mx-auto max-w-md space-y-6">
+
+          <Card>
+            <CardHeader>
+                <CardTitle>Describe the Emergency (Optional)</CardTitle>
+                <CardDescription>Providing details helps us send the right help faster.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <form onSubmit={handleDescriptionSubmit} className="flex items-center gap-2">
+                    <Input 
+                        placeholder="e.g., 'Chest pain', 'Accident'"
+                        value={emergencyDescription}
+                        onChange={(e) => setEmergencyDescription(e.target.value)}
+                        disabled={loading}
+                    />
+                    <Button type="submit" disabled={loading}>
+                        <Send className="h-4 w-4 mr-2" />
+                        Update
+                    </Button>
+                </form>
+            </CardContent>
+          </Card>
+
           {loading && (
              <div className="text-center space-y-4">
                 <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-                <p className="text-muted-foreground">Finding nearest available ambulances...</p>
+                <p className="text-muted-foreground">{isDescriptionSubmitted ? "Finding specialized help..." : "Finding nearest available ambulances..."}</p>
                  {Array.from({ length: 3 }).map((_, index) => (
                     <Card key={index} className="overflow-hidden">
                         <CardContent className="p-4">
