@@ -54,7 +54,7 @@ const quickAccessItems = [
     title: "Ambulance & SOS",
     icon: Ambulance,
     description: "24/7 emergency ambulance service.",
-    href: "#",
+    href: "/ambulance-sos",
   },
   {
     title: "Yoga & Wellness",
