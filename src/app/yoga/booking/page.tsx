@@ -61,7 +61,7 @@ export default function YogaBookingPage() {
   const filteredCenters = yogaCenters.filter(center => 
       classType === 'all' || 
       (classType === 'online' && center.onlineClasses) ||
-      (classType === 'offline' && center.onlineClasses === false)
+      (classType === 'offline' && !center.onlineClasses)
   )
 
   return (
@@ -132,7 +132,8 @@ export default function YogaBookingPage() {
 
           {error && <p className="text-center text-red-500">{error}</p>}
 
-          {!loading && !error && filteredCenters.map((center) => (
+          {!loading && !error && filteredCenters.length > 0 ? (
+             filteredCenters.map((center) => (
               <Card key={center.id} className="overflow-hidden">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
@@ -174,7 +175,10 @@ export default function YogaBookingPage() {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            ))
+          ) : (
+             !loading && <p className="text-center text-muted-foreground">No yoga centers found for this selection.</p>
+          )}
         </div>
       </main>
       <footer className="sticky bottom-0 z-10 border-t bg-background p-4">
