@@ -319,7 +319,3 @@ function PatientTable({ patients }: { patients: Patient[] }) {
     </Table>
   );
 }
-
-    
-
-    
