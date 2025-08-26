@@ -33,6 +33,8 @@ export function Header() {
       setView("ambulance")
     } else if (pathname.includes("/lab")) {
       setView("lab")
+    } else if (pathname.includes("/yoga")) {
+      setView("yoga")
     } else {
       setView("patient")
     }
@@ -55,6 +57,9 @@ export function Header() {
         break
       case "lab":
         router.push("/lab")
+        break
+      case "yoga":
+        router.push("/yoga")
         break
       default:
         router.push("/dashboard")
@@ -88,6 +93,7 @@ export function Header() {
                   <SelectItem value="medical-store">Store View</SelectItem>
                   <SelectItem value="ambulance">Ambulance View</SelectItem>
                   <SelectItem value="lab">Lab View</SelectItem>
+                  <SelectItem value="yoga">Yoga View</SelectItem>
                 </SelectContent>
               </Select>
             </div>

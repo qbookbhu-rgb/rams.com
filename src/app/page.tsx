@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 
-type Role = "patient" | "doctor" | "medical-store" | "ambulance" | "lab"
+type Role = "patient" | "doctor" | "medical-store" | "ambulance" | "lab" | "yoga"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -62,6 +62,9 @@ export default function LoginPage() {
           break
         case "lab":
           router.push("/lab")
+          break
+        case "yoga":
+          router.push("/yoga")
           break
         default:
           router.push("/dashboard")
@@ -115,6 +118,7 @@ export default function LoginPage() {
                         <SelectItem value="medical-store">Medical Store</SelectItem>
                         <SelectItem value="ambulance">Ambulance Driver</SelectItem>
                         <SelectItem value="lab">Lab Technician</SelectItem>
+                        <SelectItem value="yoga">Yoga Center</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
