@@ -27,13 +27,13 @@ export async function updateDoctorProfile(data: ProfileFormValues) {
     throw new Error("You must be logged in to update your profile.");
   }
 
+  // We omit photo and certificate for now as they require file storage.
+  // This will be implemented in a later step.
   const {
-    // We omit photo and certificate for now as they require file storage.
-    // This will be implemented in a later step.
     photo,
     certificate,
     ...restOfData
-  } = data;
+  } = data as any;
   
   const validatedData = profileFormSchema.parse(restOfData);
 
