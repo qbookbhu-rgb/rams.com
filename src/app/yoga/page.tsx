@@ -1,6 +1,7 @@
 
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import {
   Calendar,
@@ -10,6 +11,9 @@ import {
   Video,
   Users,
 } from "lucide-react"
+import { doc, getDoc } from "firebase/firestore"
+import { auth, db } from "@/lib/firebase"
+import { YogaCenter } from "@/lib/types/yoga"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -32,6 +36,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const classes = [
   {
@@ -67,9 +72,43 @@ const classes = [
 ]
 
 export default function YogaDashboard() {
+  const [yogaCenter, setYogaCenter] = useState<YogaCenter | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
   const totalEarnings = 12500.0
   const commissionPaid = totalEarnings * 0.05
   const netPayout = totalEarnings - commissionPaid
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        const fetchYogaData = async () => {
+          setLoading(true)
+          try {
+            const docRef = doc(db, "yoga_centers", user.uid)
+            const docSnap = await getDoc(docRef)
+            if (docSnap.exists()) {
+              setYogaCenter({ id: docSnap.id, ...docSnap.data() } as YogaCenter)
+            } else {
+              setYogaCenter(null)
+            }
+          } catch (err) {
+            console.error("Error fetching yoga center data: ", err)
+            setError("Failed to load your data. Please try again.")
+          } finally {
+            setLoading(false)
+          }
+        }
+        fetchYogaData()
+      } else {
+        setLoading(false)
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
+
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -173,12 +212,20 @@ export default function YogaDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Center Details</CardTitle>
-                  <CardDescription>Aatma Yoga Studio</CardDescription>
+                   {loading ? (
+                    <Skeleton className="h-5 w-48" />
+                  ) : (
+                    <CardDescription>{yogaCenter?.centerName || "Complete your profile"}</CardDescription>
+                  )}
                 </CardHeader>
                 <CardContent>
+                  {loading ? (
+                    <Skeleton className="h-5 w-32" />
+                  ) : (
                   <p className="text-sm text-muted-foreground">
-                    Instructor: Priya Sharma
+                    Instructor: {yogaCenter?.instructorName || 'N/A'}
                   </p>
+                  )}
                    <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
                      <Link href="/yoga/profile">
                         <Pencil className="mr-2 h-4 w-4" /> Edit Center Info
