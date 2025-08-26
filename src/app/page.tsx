@@ -10,7 +10,8 @@ import {
   signInWithPopup,
   GoogleAuthProvider
 } from "firebase/auth"
-import { auth } from "@/lib/firebase"
+import { doc, getDoc } from "firebase/firestore"
+import { auth, db } from "@/lib/firebase"
 
 
 import { Button } from "@/components/ui/button"
@@ -26,13 +27,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { GoogleIcon } from "@/components/icons"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 
 type Role = "patient" | "doctor" | "medical-store" | "ambulance" | "lab" | "yoga"
@@ -40,7 +34,6 @@ type Role = "patient" | "doctor" | "medical-store" | "ambulance" | "lab" | "yoga
 export default function LoginPage() {
   const router = useRouter()
   const { toast } = useToast()
-  const [role, setRole] = useState<Role>("patient")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [mobile, setMobile] = useState("")
@@ -57,12 +50,30 @@ export default function LoginPage() {
     }
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      toast({
-        title: "Login Successful",
-        description: `Redirecting to ${role} dashboard...`,
-      });
-      redirectToDashboard(role);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      // Fetch user role from Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userProfile = userDocSnap.data();
+        toast({
+            title: "Login Successful",
+            description: `Welcome back! Redirecting...`,
+        });
+        redirectToDashboard(userProfile.role);
+      } else {
+         // This case might happen if a user was created in Auth but not in Firestore
+         // Or if they are a patient who hasn't been assigned a role document yet.
+         // Defaulting to patient dashboard.
+         toast({
+            title: "Login Successful",
+            description: "Welcome back! Redirecting to patient dashboard.",
+         });
+         redirectToDashboard("patient");
+      }
+
     } catch (error: any) {
       console.error("Login failed:", error);
       toast({
@@ -77,14 +88,16 @@ export default function LoginPage() {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
+    const provider = new GoogleAuthProvider();
     try {
-      const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
+      // For simplicity, we'll redirect to patient dashboard after Google sign-in.
+      // A more complex implementation might ask for role selection on first Google sign-in.
       toast({
         title: "Login Successful",
-        description: `Redirecting to ${role} dashboard...`,
+        description: `Welcome! Redirecting to dashboard...`,
       });
-      redirectToDashboard(role);
+      redirectToDashboard("patient");
     } catch (error: any) {
       console.error("Google Sign-in failed:", error);
       toast({
@@ -151,61 +164,43 @@ export default function LoginPage() {
           <CardDescription>Your trusted health partner. Login to continue.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-             <div className="space-y-2">
-                <Label htmlFor="role">Select Your Role</Label>
-                 <Select onValueChange={(value) => setRole(value as Role)} defaultValue="patient">
-                    <SelectTrigger id="role">
-                        <SelectValue placeholder="Select role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="patient">Patient</SelectItem>
-                        <SelectItem value="doctor">Doctor</SelectItem>
-                        <SelectItem value="medical-store">Medical Store</SelectItem>
-                        <SelectItem value="ambulance">Ambulance Driver</SelectItem>
-                        <SelectItem value="lab">Lab Technician</SelectItem>
-                        <SelectItem value="yoga">Yoga Center</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-            <Tabs defaultValue="email">
-                <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="email">Email</TabsTrigger>
-                <TabsTrigger value="mobile">Mobile OTP</TabsTrigger>
-                </TabsList>
-                <TabsContent value="email">
-                <div className="space-y-4 pt-4">
-                    <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="name@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} />
-                    </div>
-                    <div className="space-y-2">
-                    <div className="flex items-center">
-                        <Label htmlFor="password">Password</Label>
-                        <Link href="#" className="ml-auto inline-block text-sm underline" prefetch={false}>
-                        Forgot password?
-                        </Link>
-                    </div>
-                    <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} />
-                    </div>
-                    <Button type="submit" className="w-full" onClick={handleLogin} disabled={loading}>
-                     {loading ? "Logging in..." : "Login with Email"}
-                    </Button>
+          <Tabs defaultValue="email">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="email">Email</TabsTrigger>
+              <TabsTrigger value="mobile">Mobile OTP</TabsTrigger>
+            </TabsList>
+            <TabsContent value="email">
+              <div className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" type="email" placeholder="name@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} />
                 </div>
-                </TabsContent>
-                <TabsContent value="mobile">
-                <div className="space-y-4 pt-4">
-                    <div className="space-y-2">
-                    <Label htmlFor="mobile">Mobile Number</Label>
-                    <Input id="mobile" type="tel" placeholder="Enter your mobile number" required value={mobile} onChange={(e) => setMobile(e.target.value)} />
-                    </div>
-                    <Button type="submit" className="w-full" onClick={handleOtpRequest}>
-                    Send OTP
-                    </Button>
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <Label htmlFor="password">Password</Label>
+                    <Link href="#" className="ml-auto inline-block text-sm underline" prefetch={false}>
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} />
                 </div>
-                </TabsContent>
-            </Tabs>
-          </div>
+                <Button type="submit" className="w-full" onClick={handleLogin} disabled={loading}>
+                 {loading ? "Logging in..." : "Login with Email"}
+                </Button>
+              </div>
+            </TabsContent>
+            <TabsContent value="mobile">
+              <div className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="mobile">Mobile Number</Label>
+                  <Input id="mobile" type="tel" placeholder="Enter your mobile number" required value={mobile} onChange={(e) => setMobile(e.target.value)} />
+                </div>
+                <Button type="submit" className="w-full" onClick={handleOtpRequest}>
+                  Send OTP
+                </Button>
+              </div>
+            </TabsContent>
+          </Tabs>
           <div className="my-6 flex items-center">
             <div className="flex-grow border-t border-muted" />
             <span className="mx-4 flex-shrink text-xs uppercase text-muted-foreground">Or continue with</span>
@@ -228,3 +223,5 @@ export default function LoginPage() {
     </div>
   )
 }
+
+    

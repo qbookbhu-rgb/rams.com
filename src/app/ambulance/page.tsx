@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
+import { onAuthStateChanged } from "firebase/auth"
 
 export default function AmbulanceDashboard() {
   const [ambulanceData, setAmbulanceData] = useState<Ambulance | null>(null)
@@ -30,7 +31,7 @@ export default function AmbulanceDashboard() {
   const netPayout = totalEarnings - commissionPaid
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
       if (user) {
         const fetchAmbulanceData = async () => {
           setLoading(true)
@@ -137,3 +138,5 @@ export default function AmbulanceDashboard() {
     </div>
   )
 }
+
+    

@@ -47,6 +47,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { MedicalStore } from "@/lib/types/medical-stores"
 import { Skeleton } from "@/components/ui/skeleton"
+import { onAuthStateChanged } from "firebase/auth"
 
 const orders = [
   {
@@ -104,7 +105,7 @@ export default function MedicalStoreDashboard() {
     const netPayout = totalEarnings - commissionPaid
 
      useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
+        const unsubscribe = onAuthStateChanged(auth, user => {
         if (user) {
             const fetchStoreData = async () => {
             setLoading(true)
@@ -405,5 +406,7 @@ function OrderTable({ orders }: { orders: typeof orders }) {
     </Table>
   )
 }
+
+    
 
     

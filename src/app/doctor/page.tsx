@@ -108,6 +108,7 @@ export default function DoctorDashboard() {
         };
         fetchData();
       } else {
+        // No user is signed in.
         setLoading(false);
       }
     });
@@ -211,7 +212,7 @@ export default function DoctorDashboard() {
                   <CardDescription>
                     Review your earnings and withdraw.
                   </CardDescription>
-                </CardHeader>
+                </Header>
                 <CardContent className="grid gap-3 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Total Bookings</span>
@@ -318,5 +319,7 @@ function PatientTable({ patients }: { patients: Patient[] }) {
     </Table>
   );
 }
+
+    
 
     

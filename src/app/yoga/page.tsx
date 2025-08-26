@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
+import { onAuthStateChanged } from "firebase/auth"
 
 const classes = [
   {
@@ -81,7 +82,7 @@ export default function YogaDashboard() {
   const netPayout = totalEarnings - commissionPaid
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
       if (user) {
         const fetchYogaData = async () => {
           setLoading(true)
@@ -302,3 +303,5 @@ function ClassTable({ classes }: { classes: typeof classes }) {
     </Table>
   )
 }
+
+    

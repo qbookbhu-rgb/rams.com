@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
+import { onAuthStateChanged } from "firebase/auth"
 
 export default function LabDashboard() {
   const [labData, setLabData] = useState<Lab | null>(null)
@@ -30,7 +31,7 @@ export default function LabDashboard() {
   const netPayout = totalEarnings - commissionPaid
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
       if (user) {
         const fetchLabData = async () => {
           setLoading(true)
@@ -132,3 +133,5 @@ export default function LabDashboard() {
     </div>
   )
 }
+
+    
