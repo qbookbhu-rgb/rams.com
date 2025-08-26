@@ -75,19 +75,19 @@ const offers = [
   {
     title: "Flat 25% Off",
     description: "On first medicine order",
-    image: "https://picsum.photos/seed/medicines/600/300",
+    image: "https://picsum.photos/seed/medicines/600/400",
     hint: "medicines pharmacy"
   },
   {
     title: "Save 50% on Tests",
     description: "Full body checkup packages",
-    image: "https://picsum.photos/seed/labtest/600/300",
+    image: "https://picsum.photos/seed/labtest/600/400",
     hint: "lab test"
   },
   {
     title: "Free Doctor Consultation",
     description: "For new users",
-    image: "https://picsum.photos/seed/doctor/600/300",
+    image: "https://picsum.photos/seed/doctor/600/400",
     hint: "doctor consultation"
   },
 ]
@@ -155,16 +155,14 @@ export default function PatientDashboard() {
                   >
                     <div className="p-1">
                       <Card className="overflow-hidden">
-                        <div className="relative h-40">
-                          <Image
-                            src={offer.image}
-                            alt={offer.title}
-                            fill
-                            className="object-cover"
-                            data-ai-hint={offer.hint}
-                          />
-                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                        </div>
+                        <Image
+                          src={offer.image}
+                          alt={offer.title}
+                          width={600}
+                          height={400}
+                          className="aspect-video w-full object-cover"
+                          data-ai-hint={offer.hint}
+                        />
                         <CardHeader>
                           <CardTitle>{offer.title}</CardTitle>
                           <CardDescription>{offer.description}</CardDescription>
