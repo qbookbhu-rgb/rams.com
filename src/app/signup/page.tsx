@@ -4,6 +4,11 @@
 import { useState } from "react"
 import Link from "next/link"
 import { HeartPulse } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { createUserWithEmailAndPassword } from "firebase/auth"
+import { auth, db } from "@/lib/firebase"
+import { doc, setDoc } from "firebase/firestore"
+
 
 import { Button } from "@/components/ui/button"
 import {
@@ -16,7 +21,6 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useRouter } from "next/navigation"
 import {
   Select,
   SelectContent,
@@ -35,6 +39,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const handleSignup = async () => {
     if (!role) {
@@ -54,9 +59,18 @@ export default function SignupPage() {
       return
     }
     
+    setLoading(true);
     try {
-      // TODO: Connect to Firebase Auth to create user
-      console.log("Signing up user:", { email, role });
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Save user role in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        role: role,
+        createdAt: new Date(),
+      });
       
       toast({
         title: "Signup Successful",
@@ -66,7 +80,6 @@ export default function SignupPage() {
       // Redirect to the correct profile page after successful signup
       switch (role) {
         case "patient":
-          // Assuming a patient profile/onboarding page will be created
           router.push("/dashboard") 
           break
         case "doctor":
@@ -85,15 +98,18 @@ export default function SignupPage() {
             router.push("/yoga/profile")
             break
         default:
+          router.push("/dashboard")
           break
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Signup failed:", error);
       toast({
         variant: "destructive",
         title: "Signup Failed",
-        description: "Could not create your account. Please try again.",
+        description: error.message || "Could not create your account. Please try again.",
       })
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -111,7 +127,7 @@ export default function SignupPage() {
           <div className="space-y-2">
             <Label htmlFor="role">I am a...</Label>
             <Select onValueChange={(value) => setRole(value as Role)} defaultValue={role}>
-              <SelectTrigger id="role">
+              <SelectTrigger id="role" disabled={loading}>
                 <SelectValue placeholder="Select your role..." />
               </SelectTrigger>
               <SelectContent>
@@ -126,18 +142,18 @@ export default function SignupPage() {
           </div>
            <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
-              <Input id="email" type="email" placeholder="name@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input id="email" type="email" placeholder="name@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading}/>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading}/>
             </div>
              <div className="space-y-2">
               <Label htmlFor="confirm-password">Confirm Password</Label>
-              <Input id="confirm-password" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+              <Input id="confirm-password" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} disabled={loading}/>
             </div>
-          <Button onClick={handleSignup} className="w-full" disabled={!role || !email || !password}>
-            Create Account
+          <Button onClick={handleSignup} className="w-full" disabled={loading || !role || !email || !password}>
+            {loading ? "Creating Account..." : "Create Account"}
           </Button>
         </CardContent>
         <CardFooter className="flex justify-center">

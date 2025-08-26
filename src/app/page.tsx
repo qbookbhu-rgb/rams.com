@@ -4,6 +4,14 @@
 import { useState } from "react"
 import Link from "next/link"
 import { HeartPulse } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { 
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider
+} from "firebase/auth"
+import { auth } from "@/lib/firebase"
+
 
 import { Button } from "@/components/ui/button"
 import {
@@ -18,7 +26,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { GoogleIcon } from "@/components/icons"
-import { useRouter } from "next/navigation"
 import {
   Select,
   SelectContent,
@@ -37,46 +44,59 @@ export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [mobile, setMobile] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const handleLogin = async () => {
-    // TODO: Connect to Firebase Authentication
-    console.log("Attempting login for:", { email, role })
-    // Mock successful login for now
-    if(email && password) {
-       toast({
+    if (!email || !password) {
+      toast({
+        variant: "destructive",
+        title: "Missing Information",
+        description: "Please enter both email and password.",
+      })
+      return
+    }
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast({
         title: "Login Successful",
         description: `Redirecting to ${role} dashboard...`,
-      })
-      switch (role) {
-        case "patient":
-          router.push("/dashboard")
-          break
-        case "doctor":
-          router.push("/doctor")
-          break
-        case "medical-store":
-          router.push("/medical-store")
-          break
-        case "ambulance":
-          router.push("/ambulance")
-          break
-        case "lab":
-          router.push("/lab")
-          break
-        case "yoga":
-          router.push("/yoga")
-          break
-        default:
-          router.push("/dashboard")
-      }
-    } else {
-       toast({
+      });
+      redirectToDashboard(role);
+    } catch (error: any) {
+      console.error("Login failed:", error);
+      toast({
         variant: "destructive",
         title: "Login Failed",
-        description: "Please check your email and password.",
-      })
+        description: error.message || "Please check your credentials and try again.",
+      });
+    } finally {
+      setLoading(false);
     }
-  }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      toast({
+        title: "Login Successful",
+        description: `Redirecting to ${role} dashboard...`,
+      });
+      redirectToDashboard(role);
+    } catch (error: any) {
+      console.error("Google Sign-in failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Google Sign-in Failed",
+        description: error.message || "Could not sign in with Google. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const handleOtpRequest = () => {
     if (mobile) {
@@ -84,7 +104,7 @@ export default function LoginPage() {
         title: "OTP Sent",
         description: `An OTP has been sent to ${mobile}.`,
       });
-      // OTP logic would go here
+      // Further OTP logic would go here
     } else {
        toast({
         variant: "destructive",
@@ -93,6 +113,32 @@ export default function LoginPage() {
       })
     }
   }
+  
+  const redirectToDashboard = (selectedRole: Role) => {
+    switch (selectedRole) {
+      case "patient":
+        router.push("/dashboard")
+        break
+      case "doctor":
+        router.push("/doctor")
+        break
+      case "medical-store":
+        router.push("/medical-store")
+        break
+      case "ambulance":
+        router.push("/ambulance")
+        break
+      case "lab":
+        router.push("/lab")
+        break
+      case "yoga":
+        router.push("/yoga")
+        break
+      default:
+        router.push("/dashboard")
+    }
+  }
+
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4 medical-background">
@@ -131,7 +177,7 @@ export default function LoginPage() {
                 <div className="space-y-4 pt-4">
                     <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="name@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                    <Input id="email" type="email" placeholder="name@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} />
                     </div>
                     <div className="space-y-2">
                     <div className="flex items-center">
@@ -140,10 +186,10 @@ export default function LoginPage() {
                         Forgot password?
                         </Link>
                     </div>
-                    <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                    <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} />
                     </div>
-                    <Button type="submit" className="w-full" onClick={handleLogin}>
-                    Login with Email
+                    <Button type="submit" className="w-full" onClick={handleLogin} disabled={loading}>
+                     {loading ? "Logging in..." : "Login with Email"}
                     </Button>
                 </div>
                 </TabsContent>
@@ -165,9 +211,9 @@ export default function LoginPage() {
             <span className="mx-4 flex-shrink text-xs uppercase text-muted-foreground">Or continue with</span>
             <div className="flex-grow border-t border-muted" />
           </div>
-          <Button variant="outline" className="w-full" onClick={handleLogin}>
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={loading}>
             <GoogleIcon className="mr-2 h-5 w-5" />
-            Login with Google
+             {loading ? "Please wait..." : "Login with Google"}
           </Button>
         </CardContent>
         <CardFooter className="flex justify-center">
