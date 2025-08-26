@@ -9,24 +9,54 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { UserNav } from "@/components/user-nav"
 
 export function Header() {
   const pathname = usePathname()
   const router = useRouter()
-  const [isDoctorView, setIsDoctorView] = useState(pathname.includes("/doctor"))
+  const [view, setView] = useState("patient")
 
   useEffect(() => {
-    setIsDoctorView(pathname.includes("/doctor"))
+    if (pathname.includes("/doctor")) {
+      setView("doctor")
+    } else if (pathname.includes("/medical-store")) {
+      setView("medical-store")
+    } else if (pathname.includes("/ambulance")) {
+      setView("ambulance")
+    } else if (pathname.includes("/lab")) {
+      setView("lab")
+    } else {
+      setView("patient")
+    }
   }, [pathname])
 
-  const handleViewChange = (checked: boolean) => {
-    setIsDoctorView(checked)
-    if (checked) {
-      router.push("/doctor")
-    } else {
-      router.push("/dashboard")
+  const handleViewChange = (value: string) => {
+    setView(value)
+    switch (value) {
+      case "patient":
+        router.push("/dashboard")
+        break
+      case "doctor":
+        router.push("/doctor")
+        break
+      case "medical-store":
+        router.push("/medical-store")
+        break
+      case "ambulance":
+        router.push("/ambulance")
+        break
+      case "lab":
+        router.push("/lab")
+        break
+      default:
+        router.push("/dashboard")
     }
   }
 
@@ -49,14 +79,18 @@ export function Header() {
           </div>
           <nav className="flex items-center space-x-2">
             <div className="flex items-center space-x-2">
-              <Label htmlFor="view-mode" className="text-sm hidden md:block">Patient</Label>
-              <Switch
-                id="view-mode"
-                checked={isDoctorView}
-                onCheckedChange={handleViewChange}
-                aria-label="Toggle between patient and doctor view"
-              />
-              <Label htmlFor="view-mode" className="text-sm hidden md:block">Doctor</Label>
+              <Select onValueChange={handleViewChange} value={view}>
+                <SelectTrigger id="view-mode" className="w-[150px] hidden md:flex">
+                  <SelectValue placeholder="Select view" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="patient">Patient View</SelectItem>
+                  <SelectItem value="doctor">Doctor View</SelectItem>
+                  <SelectItem value="medical-store">Store View</SelectItem>
+                  <SelectItem value="ambulance">Ambulance View</SelectItem>
+                  <SelectItem value="lab">Lab View</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <UserNav />
           </nav>

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { HeartPulse } from "lucide-react"
 
@@ -17,12 +18,40 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { GoogleIcon } from "@/components/icons"
 import { useRouter } from "next/navigation"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+type Role = "patient" | "doctor" | "medical-store" | "ambulance" | "lab"
 
 export default function LoginPage() {
   const router = useRouter()
+  const [role, setRole] = useState<Role>("patient")
 
   const handleLogin = () => {
-    router.push("/dashboard")
+    switch (role) {
+      case "patient":
+        router.push("/dashboard")
+        break
+      case "doctor":
+        router.push("/doctor")
+        break
+      case "medical-store":
+        router.push("/medical-store")
+        break
+      case "ambulance":
+        router.push("/ambulance")
+        break
+      case "lab":
+        router.push("/lab")
+        break
+      default:
+        router.push("/dashboard")
+    }
   }
 
   return (
@@ -36,43 +65,60 @@ export default function LoginPage() {
           <CardDescription>Your trusted health partner. Login to continue.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="email">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="email">Email</TabsTrigger>
-              <TabsTrigger value="mobile">Mobile OTP</TabsTrigger>
-            </TabsList>
-            <TabsContent value="email">
-              <div className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="name@example.com" required />
+          <div className="space-y-4">
+             <div className="space-y-2">
+                <Label htmlFor="role">Select Your Role</Label>
+                 <Select onValueChange={(value) => setRole(value as Role)} defaultValue="patient">
+                    <SelectTrigger id="role">
+                        <SelectValue placeholder="Select role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="patient">Patient</SelectItem>
+                        <SelectItem value="doctor">Doctor</SelectItem>
+                        <SelectItem value="medical-store">Medical Store</SelectItem>
+                        <SelectItem value="ambulance">Ambulance Driver</SelectItem>
+                        <SelectItem value="lab">Lab Technician</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            <Tabs defaultValue="email">
+                <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="email">Email</TabsTrigger>
+                <TabsTrigger value="mobile">Mobile OTP</TabsTrigger>
+                </TabsList>
+                <TabsContent value="email">
+                <div className="space-y-4 pt-4">
+                    <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" type="email" placeholder="name@example.com" required />
+                    </div>
+                    <div className="space-y-2">
+                    <div className="flex items-center">
+                        <Label htmlFor="password">Password</Label>
+                        <Link href="#" className="ml-auto inline-block text-sm underline" prefetch={false}>
+                        Forgot password?
+                        </Link>
+                    </div>
+                    <Input id="password" type="password" required />
+                    </div>
+                    <Button type="submit" className="w-full" onClick={handleLogin}>
+                    Login with Email
+                    </Button>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
-                    <Link href="#" className="ml-auto inline-block text-sm underline" prefetch={false}>
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <Input id="password" type="password" required />
+                </TabsContent>
+                <TabsContent value="mobile">
+                <div className="space-y-4 pt-4">
+                    <div className="space-y-2">
+                    <Label htmlFor="mobile">Mobile Number</Label>
+                    <Input id="mobile" type="tel" placeholder="Enter your mobile number" required />
+                    </div>
+                    <Button type="submit" className="w-full" onClick={handleLogin}>
+                    Send OTP
+                    </Button>
                 </div>
-                <Button type="submit" className="w-full" onClick={handleLogin}>
-                  Login with Email
-                </Button>
-              </div>
-            </TabsContent>
-            <TabsContent value="mobile">
-              <div className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="mobile">Mobile Number</Label>
-                  <Input id="mobile" type="tel" placeholder="Enter your mobile number" required />
-                </div>
-                <Button type="submit" className="w-full" onClick={handleLogin}>
-                  Send OTP
-                </Button>
-              </div>
-            </TabsContent>
-          </Tabs>
+                </TabsContent>
+            </Tabs>
+          </div>
           <div className="my-6 flex items-center">
             <div className="flex-grow border-t border-muted" />
             <span className="mx-4 flex-shrink text-xs uppercase text-muted-foreground">Or continue with</span>
