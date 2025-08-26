@@ -71,7 +71,7 @@ const prompt = ai.definePrompt({
     5.  Return the top 3 most appropriate and nearest online ambulances.
 
     User Location: Latitude: {{{userLocation.latitude}}}, Longitude: {{{userLocation.longitude}}}
-    Emergency Description: {{#if emergencyDescription}}"{{{emergencyDescription}}"{{else}}N/A{{/if}}
+    Emergency Description: {{#if emergencyDescription}}"{{{emergencyDescription}}}"{{else}}N/A{{/if}}
 
     List of All Ambulances:
     {{{json allAmbulances}}}
