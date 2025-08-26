@@ -3,13 +3,15 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowLeft, Calendar, Clock, CreditCard, User, Video } from "lucide-react"
+import { ArrowLeft, Calendar as CalendarIcon, Clock, CreditCard, User, Video } from "lucide-react"
 import { doc, getDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Doctor } from "@/lib/types/doctors"
+import { format } from "date-fns"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
 import {
   Card,
   CardContent,
@@ -21,6 +23,12 @@ import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 
 export default function BookAppointmentPage({ params }: { params: { id: string } }) {
@@ -28,6 +36,7 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [consultationMode, setConsultationMode] = useState("offline")
+  const [date, setDate] = useState<Date | undefined>(new Date())
 
   useEffect(() => {
     if (!params.id) return
@@ -116,17 +125,35 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
 
                <div>
                 <Label className="text-base font-semibold">Select Date & Time Slot</Label>
-                <div className="mt-2 flex gap-2">
-                    <Button variant="outline" className="flex-1">
-                        <Calendar className="mr-2 h-4 w-4" />
-                        Select Date
-                    </Button>
+                 <div className="mt-2 grid grid-cols-1 gap-2">
+                    <Popover>
+                        <PopoverTrigger asChild>
+                        <Button
+                            variant={"outline"}
+                            className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !date && "text-muted-foreground"
+                            )}
+                        >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date ? format(date, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                        <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={setDate}
+                            initialFocus
+                        />
+                        </PopoverContent>
+                    </Popover>
                     <Button variant="outline" className="flex-1">
                         <Clock className="mr-2 h-4 w-4" />
                         Select Time
                     </Button>
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">{doctor.availableSlots}</p>
+                <p className="text-xs text-muted-foreground mt-2">Available Slots: {doctor.availableSlots}</p>
               </div>
 
               <Separator />
