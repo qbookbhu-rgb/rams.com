@@ -35,8 +35,7 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { Header } from "@/components/header"
 import { useToast } from "@/hooks/use-toast"
-
-// TODO: Import a server action to save the data
+import { updateAmbulanceProfile } from "./actions"
 
 const profileFormSchema = z.object({
   driverName: z.string().min(2, "Driver name must be at least 2 characters."),
@@ -73,8 +72,9 @@ export default function AmbulanceProfilePage() {
 
   async function onSubmit(data: ProfileFormValues) {
     try {
-      // TODO: Call the server action to save the data to Firestore
-      console.log("Form data submitted:", data)
+      // Omit photo for now as it requires file storage.
+      const { photo, ...formData } = data;
+      await updateAmbulanceProfile(formData)
       toast({
         title: "Profile Updated",
         description: "Your vehicle information has been saved successfully.",
