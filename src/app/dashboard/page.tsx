@@ -75,19 +75,19 @@ const offers = [
   {
     title: "Flat 25% Off",
     description: "On first medicine order",
-    image: "https://picsum.photos/600/300?random=1",
-    hint: "medicine pharmacy"
+    image: "https://picsum.photos/seed/medicines/600/300",
+    hint: "medicines pharmacy"
   },
   {
     title: "Save 50% on Tests",
     description: "Full body checkup packages",
-    image: "https://picsum.photos/600/300?random=2",
+    image: "https://picsum.photos/seed/labtest/600/300",
     hint: "lab test"
   },
   {
     title: "Free Doctor Consultation",
     description: "For new users",
-    image: "https://picsum.photos/600/300?random=3",
+    image: "https://picsum.photos/seed/doctor/600/300",
     hint: "doctor consultation"
   },
 ]
