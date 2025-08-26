@@ -1,6 +1,10 @@
 
 "use client"
 
+import { useState, useEffect } from "react"
+import { doc, getDoc } from "firebase/firestore"
+import { auth, db } from "@/lib/firebase"
+import { Lab } from "@/lib/types/labs"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/header"
 import { CircleDollarSign, Pencil } from "lucide-react"
@@ -14,12 +18,45 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function LabDashboard() {
+  const [labData, setLabData] = useState<Lab | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
   const totalEarnings = 25000.00
   const commissionPaid = totalEarnings * 0.05
   const netPayout = totalEarnings - commissionPaid
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        const fetchLabData = async () => {
+          setLoading(true)
+          try {
+            const docRef = doc(db, "labs", user.uid)
+            const docSnap = await getDoc(docRef)
+            if (docSnap.exists()) {
+              setLabData({ id: docSnap.id, ...docSnap.data() } as Lab)
+            } else {
+              setLabData(null)
+            }
+          } catch (err) {
+            console.error("Error fetching lab data: ", err)
+            setError("Failed to load your data. Please try again.")
+          } finally {
+            setLoading(false)
+          }
+        }
+        fetchLabData()
+      } else {
+        setLoading(false)
+      }
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -38,12 +75,20 @@ export default function LabDashboard() {
              <Card>
                 <CardHeader>
                   <CardTitle>Lab Details</CardTitle>
-                  <CardDescription>City Diagnostics</CardDescription>
+                  {loading ? (
+                    <Skeleton className="h-5 w-48" />
+                  ) : (
+                    <CardDescription>{labData?.labName || "Complete your profile"}</CardDescription>
+                  )}
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Registration ID: REG4567
-                  </p>
+                   {loading ? (
+                    <Skeleton className="h-5 w-32" />
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Registration ID: {labData?.registrationID || 'N/A'}
+                    </p>
+                  )}
                     <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
                       <Link href="/lab/profile">
                         <Pencil className="mr-2 h-4 w-4" /> Edit Lab Info
@@ -57,7 +102,7 @@ export default function LabDashboard() {
                   <CardDescription>
                     Review your earnings and withdraw.
                   </CardDescription>
-                </CardHeader>
+                </Header>
                 <CardContent className="grid gap-3 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Total Tests</span>
