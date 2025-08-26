@@ -10,7 +10,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Ambulance } from '@/lib/types/ambulance';
@@ -65,7 +65,7 @@ const prompt = ai.definePrompt({
 
     Follow these steps meticulously:
     1.  Filter the list to include ONLY ambulances that are currently online (status is true).
-    2.  If an 'emergencyDescription' is provided (e.g., 'severe chest pain', 'accident with bleeding'), analyze it to determine the required type of ambulance. Prioritize vehicle types like 'Cardiac', 'ICU Ambulance', or 'Advanced Life Support' for serious conditions. If no description is given or it's vague, treat all ambulance types equally.
+    2.  If an 'emergencyDescription' is provided (e.g., 'severe chest pain', 'accident with bleeding'), analyze it to determine the required type of ambulance. Prioritize vehicle types like 'Cardiac', 'ICU Ambulance', or 'Advanced Life Support' for serious conditions. If no description is given or it's vague, treat all ambulance types as a lower priority factor.
     3.  For each online ambulance, use the getDistance tool to calculate its distance from the user's location.
     4.  Sort the ambulances based on two factors: first by suitability (if a specific type is needed) and then by distance (nearest to farthest).
     5.  Return the top 3 most appropriate and nearest online ambulances.
@@ -93,10 +93,14 @@ const intelligentSosFlow = ai.defineFlow(
       ...doc.data()
     })) as Ambulance[];
 
-    // 2. Call the prompt with the user's location and the list of ambulances
+    // 2. Filter for online ambulances before sending to AI, to optimize.
+    const onlineAmbulances = allAmbulances.filter(a => a.status === true);
+
+
+    // 3. Call the prompt with the user's location and the list of online ambulances
     const { output } = await prompt({
         userLocation,
-        allAmbulances,
+        allAmbulances: onlineAmbulances,
         emergencyDescription,
     });
 

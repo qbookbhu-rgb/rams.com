@@ -151,7 +151,7 @@ export default function AmbulanceSosPage() {
 
           {!loading && !error && ambulances.map((ambulance) => (
               <Card key={ambulance.id} className="overflow-hidden border-primary border-2 shadow-lg">
-                 <CardHeader className="flex flex-row items-center justify-between">
+                 <CardHeader className="flex flex-row items-center justify-between p-4">
                     <div className="flex items-center gap-4">
                         <Avatar className="h-12 w-12 border">
                             <AvatarFallback>{ambulance.driverName.charAt(0)}</AvatarFallback>
@@ -165,7 +165,7 @@ export default function AmbulanceSosPage() {
                         {ambulance.status ? "Online" : "Offline"}
                     </Badge>
                  </CardHeader>
-                <CardContent className="space-y-3 text-sm">
+                <CardContent className="space-y-3 text-sm p-4 pt-0">
                      <div className="flex items-start gap-2 font-semibold">
                         <span>{ambulance.vehicleType}</span>
                     </div>
@@ -177,7 +177,7 @@ export default function AmbulanceSosPage() {
                         <IndianRupee className="h-4 w-4 mt-0.5 shrink-0" />
                         <span>Charges: {ambulance.charges}</span>
                     </div>
-                     <Button className="w-full mt-2" asChild>
+                     <Button className="w-full mt-2" asChild size="lg">
                         <a href={`tel:${ambulance.contact}`}>
                             <Phone className="mr-2 h-4 w-4" /> Call Now ({ambulance.contact})
                         </a>
