@@ -27,8 +27,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Header } from "@/components/header"
 import { useToast } from "@/hooks/use-toast"
-
-// TODO: Import a server action to save the data
+import { updateDoctorProfile } from "./actions"
 
 const profileFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -70,8 +69,7 @@ export default function DoctorProfilePage() {
 
   async function onSubmit(data: ProfileFormValues) {
     try {
-      // TODO: Call the server action to save the data to Firestore
-      console.log("Form data submitted:", data)
+      await updateDoctorProfile(data)
       toast({
         title: "Profile Updated",
         description: "Your information has been saved successfully.",
