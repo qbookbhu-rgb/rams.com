@@ -278,7 +278,7 @@ export default function MedicalStoreDashboard() {
                    <CardDescription>
                     Review your earnings and withdraw.
                   </CardDescription>
-                </Header>
+                </CardHeader>
                  <CardContent className="grid gap-3 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Total Sales</span>
@@ -314,7 +314,7 @@ export default function MedicalStoreDashboard() {
                     </div>
                     <span className="font-semibold">4.8 (52 Reviews)</span>
                   </div>
-                </Header>
+                </CardHeader>
                 <CardContent className="grid gap-6">
                   {reviews.map((review, index) => (
                     <div key={index} className="flex gap-4">
