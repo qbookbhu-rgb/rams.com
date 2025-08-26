@@ -29,13 +29,7 @@ import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { Header } from "@/components/header"
 import { useToast } from "@/hooks/use-toast"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { updateYogaProfile } from "./actions"
 
 const profileFormSchema = z.object({
   centerName: z.string().min(2, "Center name must be at least 2 characters."),
@@ -72,8 +66,8 @@ export default function YogaProfilePage() {
 
   async function onSubmit(data: ProfileFormValues) {
     try {
-      // TODO: Call the server action to save the data to Firestore
-      console.log("Form data submitted:", data)
+      const { photo, ...formData } = data;
+      await updateYogaProfile(formData)
       toast({
         title: "Profile Updated",
         description: "Your yoga center information has been saved successfully.",
