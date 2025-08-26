@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import {
@@ -23,38 +24,73 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useToast } from "@/hooks/use-toast"
 
 type Role = "patient" | "doctor" | "medical-store" | "ambulance" | "lab"
 
 export default function SignupPage() {
   const router = useRouter()
+  const { toast } = useToast()
   const [role, setRole] = useState<Role | "">("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
 
-  const handleContinue = () => {
-    if (!role) return;
+  const handleSignup = async () => {
+    if (!role) {
+      toast({
+        variant: "destructive",
+        title: "Role not selected",
+        description: "Please select a role to continue.",
+      })
+      return
+    }
+    if (password !== confirmPassword) {
+      toast({
+        variant: "destructive",
+        title: "Passwords do not match",
+        description: "Please check your password and try again.",
+      })
+      return
+    }
     
-    // For now, we redirect to the profile pages which act as the detailed forms.
-    // We can later create dedicated sign-up forms for each role.
-    switch (role) {
-      case "patient":
-        // Assuming a patient profile page exists or we create one
-        router.push("/dashboard") // Or a dedicated patient signup form
-        break
-      case "doctor":
-        router.push("/doctor/profile")
-        break
-      case "medical-store":
-        router.push("/medical-store/profile")
-        break
-      case "ambulance":
-        router.push("/ambulance/profile")
-        break
-      case "lab":
-        router.push("/lab/profile")
-        break
-      default:
-        // Handle case where role is not set
-        break
+    try {
+      // TODO: Connect to Firebase Auth to create user
+      console.log("Signing up user:", { email, role });
+      
+      toast({
+        title: "Signup Successful",
+        description: "Please fill in your profile details.",
+      })
+
+      // Redirect to the correct profile page after successful signup
+      switch (role) {
+        case "patient":
+          // Assuming a patient profile/onboarding page will be created
+          router.push("/dashboard") 
+          break
+        case "doctor":
+          router.push("/doctor/profile")
+          break
+        case "medical-store":
+          router.push("/medical-store/profile")
+          break
+        case "ambulance":
+          router.push("/ambulance/profile")
+          break
+        case "lab":
+          router.push("/lab/profile")
+          break
+        default:
+          break
+      }
+    } catch (error) {
+      console.error("Signup failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Signup Failed",
+        description: "Could not create your account. Please try again.",
+      })
     }
   }
 
@@ -66,12 +102,12 @@ export default function SignupPage() {
             <HeartPulse className="h-10 w-10 text-primary" />
           </div>
           <CardTitle className="text-3xl font-bold font-headline">Create an Account</CardTitle>
-          <CardDescription>First, tell us who you are.</CardDescription>
+          <CardDescription>Join our network of patients and providers.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="role">Select Your Role</Label>
-            <Select onValueChange={(value) => setRole(value as Role)} defaultValue="">
+            <Label htmlFor="role">I am a...</Label>
+            <Select onValueChange={(value) => setRole(value as Role)} defaultValue={role}>
               <SelectTrigger id="role">
                 <SelectValue placeholder="Select your role..." />
               </SelectTrigger>
@@ -84,8 +120,20 @@ export default function SignupPage() {
               </SelectContent>
             </Select>
           </div>
-          <Button onClick={handleContinue} className="w-full" disabled={!role}>
-            Continue
+           <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <Input id="email" type="email" placeholder="name@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+            </div>
+             <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <Input id="confirm-password" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+            </div>
+          <Button onClick={handleSignup} className="w-full" disabled={!role || !email || !password}>
+            Create Account
           </Button>
         </CardContent>
         <CardFooter className="flex justify-center">

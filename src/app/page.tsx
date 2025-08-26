@@ -26,32 +26,68 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useToast } from "@/hooks/use-toast"
 
 type Role = "patient" | "doctor" | "medical-store" | "ambulance" | "lab"
 
 export default function LoginPage() {
   const router = useRouter()
+  const { toast } = useToast()
   const [role, setRole] = useState<Role>("patient")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [mobile, setMobile] = useState("")
 
-  const handleLogin = () => {
-    switch (role) {
-      case "patient":
-        router.push("/dashboard")
-        break
-      case "doctor":
-        router.push("/doctor")
-        break
-      case "medical-store":
-        router.push("/medical-store")
-        break
-      case "ambulance":
-        router.push("/ambulance")
-        break
-      case "lab":
-        router.push("/lab")
-        break
-      default:
-        router.push("/dashboard")
+  const handleLogin = async () => {
+    // TODO: Connect to Firebase Authentication
+    console.log("Attempting login for:", { email, role })
+    // Mock successful login for now
+    if(email && password) {
+       toast({
+        title: "Login Successful",
+        description: `Redirecting to ${role} dashboard...`,
+      })
+      switch (role) {
+        case "patient":
+          router.push("/dashboard")
+          break
+        case "doctor":
+          router.push("/doctor")
+          break
+        case "medical-store":
+          router.push("/medical-store")
+          break
+        case "ambulance":
+          router.push("/ambulance")
+          break
+        case "lab":
+          router.push("/lab")
+          break
+        default:
+          router.push("/dashboard")
+      }
+    } else {
+       toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "Please check your email and password.",
+      })
+    }
+  }
+
+  const handleOtpRequest = () => {
+    if (mobile) {
+      toast({
+        title: "OTP Sent",
+        description: `An OTP has been sent to ${mobile}.`,
+      });
+      // OTP logic would go here
+    } else {
+       toast({
+        variant: "destructive",
+        title: "Invalid Number",
+        description: "Please enter a valid mobile number.",
+      })
     }
   }
 
@@ -91,7 +127,7 @@ export default function LoginPage() {
                 <div className="space-y-4 pt-4">
                     <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="name@example.com" required />
+                    <Input id="email" type="email" placeholder="name@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
                     </div>
                     <div className="space-y-2">
                     <div className="flex items-center">
@@ -100,7 +136,7 @@ export default function LoginPage() {
                         Forgot password?
                         </Link>
                     </div>
-                    <Input id="password" type="password" required />
+                    <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
                     </div>
                     <Button type="submit" className="w-full" onClick={handleLogin}>
                     Login with Email
@@ -111,9 +147,9 @@ export default function LoginPage() {
                 <div className="space-y-4 pt-4">
                     <div className="space-y-2">
                     <Label htmlFor="mobile">Mobile Number</Label>
-                    <Input id="mobile" type="tel" placeholder="Enter your mobile number" required />
+                    <Input id="mobile" type="tel" placeholder="Enter your mobile number" required value={mobile} onChange={(e) => setMobile(e.target.value)} />
                     </div>
-                    <Button type="submit" className="w-full" onClick={handleLogin}>
+                    <Button type="submit" className="w-full" onClick={handleOtpRequest}>
                     Send OTP
                     </Button>
                 </div>
