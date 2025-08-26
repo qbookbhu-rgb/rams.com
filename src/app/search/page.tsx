@@ -11,7 +11,7 @@ import { Search, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Header } from "@/components/header"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function AISearchPage() {
   const [query, setQuery] = useState("")
@@ -72,20 +72,26 @@ export default function AISearchPage() {
           {results && (
             <Card className="mx-auto w-full max-w-lg">
               <CardHeader>
-                <CardTitle>Suggested Specialists</CardTitle>
+                <CardTitle>AI-Powered Suggestions</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                <div className="rounded-md border bg-muted p-4 text-sm">
+                  <p>{results.response}</p>
+                </div>
                 {results.specialists.length > 0 ? (
-                  <ul className="space-y-2">
-                    {results.specialists.map((specialist, index) => (
-                      <li key={index} className="rounded-md border p-4 text-center font-medium">
-                        {specialist}
-                      </li>
-                    ))}
-                  </ul>
+                    <div>
+                        <h3 className="font-semibold mb-2">Suggested Specialists:</h3>
+                        <ul className="space-y-2">
+                            {results.specialists.map((specialist, index) => (
+                            <li key={index} className="rounded-md border p-4 text-center font-medium">
+                                {specialist}
+                            </li>
+                            ))}
+                        </ul>
+                    </div>
                 ) : (
                   <p className="text-center text-muted-foreground">
-                    No specialists found for your query. Please try being more specific.
+                    No specific specialists could be determined. Please try being more specific with your symptoms.
                   </p>
                 )}
               </CardContent>
