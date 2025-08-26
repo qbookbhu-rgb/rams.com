@@ -33,6 +33,7 @@ import { auth, db } from "@/lib/firebase"
 import { doc, getDoc } from "firebase/firestore"
 import { Doctor } from "@/lib/types/doctors"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Separator } from "@/components/ui/separator"
 
 const profileFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -44,7 +45,16 @@ const profileFormSchema = z.object({
   consultationFee: z.coerce.number().min(0, "Fee must be a positive number."),
   contact: z.string().min(10, "Contact number must be at least 10 digits."),
   location: z.string().min(3, "Location is required."),
-  availableSlots: z.string().min(3, "Available slots are required."),
+  availableTimeSlots: z.object({
+    weekdays: z.object({
+      morning: z.string().min(3, "Weekday morning slots are required."),
+      evening: z.string().min(3, "Weekday evening slots are required."),
+    }),
+    weekends: z.object({
+      morning: z.string().min(3, "Weekend morning slots are required."),
+      evening: z.string().min(3, "Weekend evening slots are required."),
+    }),
+  }),
   bio: z.string().max(280, "Bio cannot be longer than 280 characters.").optional(),
   certificate: z.any().optional(),
 })
@@ -65,7 +75,10 @@ export default function DoctorProfilePage() {
       consultationFee: 0,
       contact: "",
       location: "",
-      availableSlots: "",
+      availableTimeSlots: {
+        weekdays: { morning: "", evening: "" },
+        weekends: { morning: "", evening: "" },
+      },
       bio: "",
     },
     mode: "onChange",
@@ -276,19 +289,73 @@ export default function DoctorProfilePage() {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="availableSlots"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Available Slots</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g., 10:00AM-12:00PM, 5:00PM-8:00PM" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    
+                    <div>
+                      <FormLabel>Available Time Slots</FormLabel>
+                      <Separator className="my-2"/>
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-4">
+                            <h4 className="font-medium text-sm">Weekdays</h4>
+                             <FormField
+                              control={form.control}
+                              name="availableTimeSlots.weekdays.morning"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs">Morning</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="e.g., 10AM - 1PM" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                             <FormField
+                              control={form.control}
+                              name="availableTimeSlots.weekdays.evening"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs">Evening</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="e.g., 5PM - 8PM" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                           <div className="space-y-4">
+                            <h4 className="font-medium text-sm">Weekends</h4>
+                             <FormField
+                              control={form.control}
+                              name="availableTimeSlots.weekends.morning"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs">Morning</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="e.g., 9AM - 12PM" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                             <FormField
+                              control={form.control}
+                              name="availableTimeSlots.weekends.evening"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-xs">Evening</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="e.g., 6PM - 9PM" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                       </div>
+                    </div>
+
+
                     <FormField
                       control={form.control}
                       name="bio"

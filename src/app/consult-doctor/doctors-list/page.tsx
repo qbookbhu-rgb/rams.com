@@ -45,6 +45,13 @@ export default function DoctorsListPage() {
     fetchDoctors()
   }, [])
 
+  const getAvailableSlotsText = (slots: Doctor['availableTimeSlots']) => {
+    if (!slots) return 'No slots available';
+    const weekdayText = `Weekdays: ${slots.weekdays.morning}, ${slots.weekdays.evening}`;
+    const weekendText = `Weekends: ${slots.weekends.morning}, ${slots.weekends.evening}`;
+    return `${weekdayText} | ${weekendText}`;
+  };
+
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -106,7 +113,7 @@ export default function DoctorsListPage() {
                         <p className="text-muted-foreground">{doctor.specialization}</p>
                         <p className="text-sm text-muted-foreground">{doctor.experience} years experience</p>
                         <p className="text-sm font-medium">{doctor.clinicName}</p>
-                        <p className="text-xs text-muted-foreground">{doctor.availableSlots}</p>
+                        <p className="text-xs text-muted-foreground">{doctor.availableTimeSlots ? getAvailableSlotsText(doctor.availableTimeSlots) : 'Slots not configured'}</p>
                       </div>
                     </div>
                     <Separator className="my-4" />

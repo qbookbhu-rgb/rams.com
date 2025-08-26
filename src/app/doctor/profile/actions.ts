@@ -14,7 +14,16 @@ const profileFormSchema = z.object({
   consultationFee: z.coerce.number().min(0, "Fee must be a positive number."),
   contact: z.string().min(10, "Contact number must be at least 10 digits."),
   location: z.string().min(3, "Location is required."),
-  availableSlots: z.string().min(3, "Available slots are required."),
+  availableTimeSlots: z.object({
+    weekdays: z.object({
+      morning: z.string().min(3, "Weekday morning slots are required."),
+      evening: z.string().min(3, "Weekday evening slots are required."),
+    }),
+    weekends: z.object({
+      morning: z.string().min(3, "Weekend morning slots are required."),
+      evening: z.string().min(3, "Weekend evening slots are required."),
+    }),
+  }),
   bio: z.string().max(280, "Bio cannot be longer than 280 characters.").optional(),
 });
 

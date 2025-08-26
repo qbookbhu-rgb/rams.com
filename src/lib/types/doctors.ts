@@ -9,8 +9,18 @@ export interface Doctor {
     consultationFee: number;
     contact: string;
     location: string;
-    availableSlots: string;
+    availableTimeSlots: {
+        weekdays: {
+            morning: string;
+            evening: string;
+        };
+        weekends: {
+            morning: string;
+            evening: string;
+        };
+    };
     bio?: string;
     userId: string;
-    updatedAt: any; // Ideally should be a Timestamp or Date type
+    updatedAt: any; 
 }
+

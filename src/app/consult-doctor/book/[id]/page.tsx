@@ -3,11 +3,11 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowLeft, Calendar as CalendarIcon, Clock, CreditCard, User, Video } from "lucide-react"
+import { ArrowLeft, Calendar as CalendarIcon, Clock, CreditCard, User, Video, Sun, Moon } from "lucide-react"
 import { doc, getDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Doctor } from "@/lib/types/doctors"
-import { format } from "date-fns"
+import { format, getDay } from "date-fns"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -37,6 +37,7 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
   const [error, setError] = useState<string | null>(null)
   const [consultationMode, setConsultationMode] = useState("offline")
   const [date, setDate] = useState<Date | undefined>(new Date())
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   useEffect(() => {
     if (!params.id) return
@@ -62,6 +63,52 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
 
     fetchDoctor()
   }, [params.id])
+  
+  const handleDateSelect = (selectedDate: Date | undefined) => {
+    setDate(selectedDate);
+    setSelectedTime(null); // Reset time when date changes
+  };
+
+  const renderTimeSlots = () => {
+    if (!date || !doctor?.availableTimeSlots) return null;
+
+    const dayOfWeek = getDay(date); // Sunday = 0, Monday = 1, etc.
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+    const slots = isWeekend 
+      ? doctor.availableTimeSlots.weekends 
+      : doctor.availableTimeSlots.weekdays;
+
+    return (
+      <div className="space-y-4">
+        {slots.morning && (
+          <div>
+            <h4 className="font-semibold text-sm mb-2 flex items-center gap-2"><Sun className="h-4 w-4"/> Morning Slots</h4>
+             <div className="grid grid-cols-3 gap-2">
+               {slots.morning.split(',').map(time => (
+                 <Button key={time} variant={selectedTime === time.trim() ? 'default' : 'outline'} onClick={() => setSelectedTime(time.trim())}>
+                   {time.trim()}
+                 </Button>
+               ))}
+            </div>
+          </div>
+        )}
+         {slots.evening && (
+          <div>
+            <h4 className="font-semibold text-sm mb-2 flex items-center gap-2"><Moon className="h-4 w-4"/> Evening Slots</h4>
+             <div className="grid grid-cols-3 gap-2">
+               {slots.evening.split(',').map(time => (
+                 <Button key={time} variant={selectedTime === time.trim() ? 'default' : 'outline'} onClick={() => setSelectedTime(time.trim())}>
+                   {time.trim()}
+                 </Button>
+               ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
 
   if (loading) {
     return <BookingSkeleton />
@@ -104,7 +151,7 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div>
                 <Label className="text-base font-semibold">Select Consultation Mode</Label>
                  <RadioGroup
@@ -123,9 +170,8 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
                 </RadioGroup>
               </div>
 
-               <div>
+               <div className="space-y-4">
                 <Label className="text-base font-semibold">Select Date & Time Slot</Label>
-                 <div className="mt-2 grid grid-cols-1 gap-2">
                     <Popover>
                         <PopoverTrigger asChild>
                         <Button
@@ -143,17 +189,14 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
                         <Calendar
                             mode="single"
                             selected={date}
-                            onSelect={setDate}
+                            onSelect={handleDateSelect}
                             initialFocus
                         />
                         </PopoverContent>
                     </Popover>
-                    <Button variant="outline" className="flex-1">
-                        <Clock className="mr-2 h-4 w-4" />
-                        Select Time
-                    </Button>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">Available Slots: {doctor.availableSlots}</p>
+                    
+                    {renderTimeSlots()}
+
               </div>
 
               <Separator />
@@ -179,8 +222,9 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
       </main>
        <footer className="sticky bottom-0 z-10 border-t bg-background p-4">
         <div className="mx-auto max-w-md">
-          <Button className="w-full" size="lg">
-            <CreditCard className="mr-2 h-5 w-5" /> Confirm & Pay
+          <Button className="w-full" size="lg" disabled={!selectedTime}>
+            <CreditCard className="mr-2 h-5 w-5" /> 
+            {selectedTime ? `Confirm & Pay for ${selectedTime}` : 'Select a Time Slot'}
           </Button>
         </div>
       </footer>
@@ -217,13 +261,17 @@ function BookingSkeleton() {
                     <Skeleton className="h-12 w-full rounded-md" />
                  </div>
                </div>
-                <div className="space-y-2">
+                <div className="space-y-4">
                  <Skeleton className="h-5 w-48" />
-                 <div className="flex gap-2">
-                    <Skeleton className="h-10 w-full rounded-md" />
-                    <Skeleton className="h-10 w-full rounded-md" />
+                 <Skeleton className="h-10 w-full rounded-md" />
+                 <div className="space-y-3">
+                   <Skeleton className="h-4 w-32" />
+                   <div className="grid grid-cols-3 gap-2">
+                      <Skeleton className="h-9 w-full" />
+                      <Skeleton className="h-9 w-full" />
+                      <Skeleton className="h-9 w-full" />
+                   </div>
                  </div>
-                  <Skeleton className="h-4 w-full" />
                </div>
               <Separator />
               <div className="space-y-3">
