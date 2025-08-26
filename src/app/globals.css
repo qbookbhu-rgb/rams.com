@@ -85,4 +85,12 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  .medical-background {
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(hsl(var(--secondary)) 1px, transparent 1px),
+      radial-gradient(hsl(var(--secondary)) 1px, transparent 1px);
+    background-position: 0 0, 25px 25px;
+    background-size: 50px 50px;
+  }
 }

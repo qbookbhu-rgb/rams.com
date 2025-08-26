@@ -2,7 +2,7 @@
 "use client"
 
 import { useState } from "react"
-import { Mic, Send, Bot, User, Loader2 } from "lucide-react"
+import { Mic, Send, Bot, User, Loader2, Stethoscope, MessageCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -28,7 +28,7 @@ export function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hello! How can I help you today? Feel free to describe your symptoms.",
+      content: "Hello! I'm Anand, your AI Health Assistant. How can I help you today? Feel free to describe your symptoms.",
     },
   ])
   const [input, setInput] = useState("")
@@ -69,14 +69,16 @@ export function Chatbot() {
         className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg"
         size="icon"
       >
-        <BotIcon className="h-8 w-8" />
+        <MessageCircle className="h-8 w-8" />
         <span className="sr-only">Open AI Chat</span>
       </Button>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <BotIcon className="h-6 w-6" />
+              <Avatar className="h-8 w-8 bg-primary text-primary-foreground">
+                <AvatarFallback><Stethoscope className="h-5 w-5" /></AvatarFallback>
+              </Avatar>
               Anand - Your AI Health Assistant
             </DialogTitle>
           </DialogHeader>
@@ -85,8 +87,8 @@ export function Chatbot() {
               {messages.map((message, index) => (
                 <div key={index} className={`flex items-start gap-3 ${message.role === "user" ? "justify-end" : ""}`}>
                   {message.role === "assistant" && (
-                     <Avatar className="h-8 w-8">
-                        <AvatarFallback><BotIcon className="h-5 w-5" /></AvatarFallback>
+                     <Avatar className="h-8 w-8 border">
+                        <AvatarFallback><Stethoscope className="h-5 w-5" /></AvatarFallback>
                     </Avatar>
                   )}
                   <div className={`rounded-lg p-3 text-sm ${message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
@@ -101,8 +103,8 @@ export function Chatbot() {
               ))}
                {loading && (
                 <div className="flex items-start gap-3">
-                   <Avatar className="h-8 w-8">
-                        <AvatarFallback><BotIcon className="h-5 w-5" /></AvatarFallback>
+                   <Avatar className="h-8 w-8 border">
+                        <AvatarFallback><Stethoscope className="h-5 w-5" /></AvatarFallback>
                     </Avatar>
                   <div className="rounded-lg bg-muted p-3">
                     <Loader2 className="h-5 w-5 animate-spin" />
