@@ -103,11 +103,11 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
                     onValueChange={setConsultationMode}
                     className="mt-2 flex gap-4"
                 >
-                    <Label className="flex items-center gap-2 rounded-md border p-3 flex-1 has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary">
+                    <Label className="flex cursor-pointer items-center gap-2 rounded-md border p-3 flex-1 has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary">
                         <RadioGroupItem value="offline" id="offline" className="sr-only" />
                         <User className="h-5 w-5" /> In-Clinic
                     </Label>
-                     <Label className="flex items-center gap-2 rounded-md border p-3 flex-1 has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary">
+                     <Label className="flex cursor-pointer items-center gap-2 rounded-md border p-3 flex-1 has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary">
                         <RadioGroupItem value="online" id="online" className="sr-only" />
                         <Video className="h-5 w-5" /> Video Call
                     </Label>

@@ -122,7 +122,7 @@ export default function ConsultDoctorPage() {
             const totalFee = doctor.consultationFee + commission
 
             return (
-              <Link href={`/consult-doctor/book/${doctor.id}`} key={doctor.id} className="block hover:bg-muted/50 rounded-lg">
+              <Link href={`/consult-doctor/book/${doctor.id}`} key={doctor.id} className="block rounded-lg transition-shadow hover:shadow-md">
                 <Card className="overflow-hidden w-full">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-4">
