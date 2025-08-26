@@ -1,10 +1,12 @@
 
 "use client"
 
-import { useState } from "react"
-import Image from "next/image"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { ArrowLeft, Search } from "lucide-react"
+import { collection, getDocs } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import { Doctor } from "@/lib/types/doctors"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -18,58 +20,37 @@ import {
   RadioGroupItem,
 } from "@/components/ui/radio-group"
 import { Separator } from "@/components/ui/separator"
-
-const doctors = [
-  {
-    name: "Dr. Ramesh Gupta",
-    specialization: "Cardiologist",
-    experience: "15 years",
-    consultationFee: 1000,
-    clinicName: "Gupta Heart Clinic",
-    timings: "10 AM - 1 PM",
-    avatar: "https://i.pravatar.cc/150?u=ramesh",
-  },
-  {
-    name: "Dr. Priya Sharma",
-    specialization: "Dermatologist",
-    experience: "8 years",
-    consultationFee: 750,
-    clinicName: "Skin & Hair Clinic",
-    timings: "11 AM - 2 PM",
-    avatar: "https://i.pravatar.cc/150?u=priya",
-  },
-  {
-    name: "Dr. Vikram Singh",
-    specialization: "Orthopedic Surgeon",
-    experience: "20 years",
-    consultationFee: 1200,
-    clinicName: "Bone & Joint Center",
-    timings: "4 PM - 7 PM",
-    avatar: "https://i.pravatar.cc/150?u=vikram",
-  },
-  {
-    name: "Dr. Anjali Desai",
-    specialization: "Pediatrician",
-    experience: "12 years",
-    consultationFee: 600,
-    clinicName: "Child Health Care",
-    timings: "9 AM - 12 PM",
-    avatar: "https://i.pravatar.cc/150?u=anjali",
-  },
-  {
-    name: "Dr. Sanjay Patel",
-    specialization: "General Physician",
-    experience: "18 years",
-    consultationFee: 500,
-    clinicName: "Family Health Clinic",
-    timings: "Mon-Sat, 9 AM - 6 PM",
-    avatar: "https://i.pravatar.cc/150?u=sanjay",
-  },
-];
+import { Skeleton } from "@/components/ui/skeleton"
 
 
 export default function ConsultDoctorPage() {
   const [consultationType, setConsultationType] = useState("offline")
+  const [doctors, setDoctors] = useState<Doctor[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const querySnapshot = await getDocs(collection(db, "doctors"));
+        const doctorsData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Doctor[];
+        setDoctors(doctorsData);
+      } catch (e) {
+        console.error("Error fetching doctors: ", e)
+        setError("Failed to load doctors. Please try again later.")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDoctors()
+  }, [])
+
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -110,24 +91,50 @@ export default function ConsultDoctorPage() {
             </CardContent>
           </Card>
 
-          {doctors.map((doctor, index) => {
+          {loading && (
+            Array.from({ length: 3 }).map((_, index) => (
+              <Card key={index} className="overflow-hidden">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-4">
+                    <Skeleton className="h-24 w-24 rounded-full" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-5 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                      <Skeleton className="h-4 w-1/3" />
+                       <Skeleton className="h-4 w-2/3" />
+                    </div>
+                  </div>
+                  <Separator className="my-4" />
+                   <div className="space-y-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-5 w-full" />
+                    </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+
+          {error && <p className="text-center text-red-500">{error}</p>}
+
+          {!loading && !error && doctors.map((doctor) => {
             const commission = doctor.consultationFee * 0.05
             const totalFee = doctor.consultationFee + commission
 
             return (
-              <Card key={index} className="overflow-hidden">
+              <Card key={doctor.id} className="overflow-hidden">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
                     <Avatar className="h-24 w-24 border">
-                      <AvatarImage src={doctor.avatar} />
-                      <AvatarFallback>{doctor.name.charAt(4)}</AvatarFallback>
+                      <AvatarImage src={`https://i.pravatar.cc/150?u=${doctor.id}`} />
+                      <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 space-y-1">
                       <h2 className="text-lg font-bold">{doctor.name}</h2>
                       <p className="text-muted-foreground">{doctor.specialization}</p>
-                       <p className="text-sm text-muted-foreground">{doctor.experience} experience</p>
+                       <p className="text-sm text-muted-foreground">{doctor.experience} years experience</p>
                        <p className="text-sm font-medium">{doctor.clinicName}</p>
-                       <p className="text-xs text-muted-foreground">{doctor.timings}</p>
+                       <p className="text-xs text-muted-foreground">{doctor.availableSlots}</p>
                     </div>
                   </div>
                   <Separator className="my-4" />
