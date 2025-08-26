@@ -1,22 +1,21 @@
 
 "use client"
 
-import Image from "next/image"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import {
   Calendar,
-  ChevronRight,
   CircleDollarSign,
-  Download,
   MessageSquare,
   MoreVertical,
   Pencil,
   Star,
   Video,
 } from "lucide-react"
+import { collection, getDocs, query, where } from "firebase/firestore"
+import { db } from "@/lib/firebase"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -43,36 +42,15 @@ import {
 } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Header } from "@/components/header"
+import { Skeleton } from "@/components/ui/skeleton"
 
-const patients = [
-  {
-    name: "John Doe",
-    id: "PID12345",
-    lastVisit: "2024-07-20",
-    status: "Upcoming",
-  },
-  {
-    name: "Jane Smith",
-    id: "PID67890",
-    lastVisit: "2024-07-18",
-    status: "Past",
-  },
-  {
-    name: "Peter Jones",
-    id: "PID11223",
-    lastVisit: "2024-07-22",
-    status: "Upcoming",
-  },
-  {
-    name: "Mary Johnson",
-    id: "PID44556",
-    lastVisit: "2024-06-15",
-    status: "Past",
-  },
-]
+interface Patient {
+  uid: string;
+  email: string;
+  role: string;
+  createdAt: any;
+}
 
-const upcomingPatients = patients.filter((p) => p.status === "Upcoming")
-const pastPatients = patients.filter((p) => p.status === "Past")
 
 const reviews = [
   {
@@ -90,9 +68,33 @@ const reviews = [
 ]
 
 export default function DoctorDashboard() {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const totalEarnings = 5230.00
   const commissionPaid = totalEarnings * 0.05
   const netPayout = totalEarnings - commissionPaid
+
+  useEffect(() => {
+    const fetchPatients = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const q = query(collection(db, "users"), where("role", "==", "patient"));
+        const querySnapshot = await getDocs(q);
+        const patientsData = querySnapshot.docs.map(doc => doc.data() as Patient);
+        setPatients(patientsData);
+      } catch (e) {
+        console.error("Error fetching patients: ", e);
+        setError("Failed to load patient data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatients();
+  }, []);
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -145,18 +147,17 @@ export default function DoctorDashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Tabs defaultValue="upcoming">
-                    <TabsList>
-                      <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-                      <TabsTrigger value="past">Past</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="upcoming">
-                      <PatientTable patients={upcomingPatients} />
-                    </TabsContent>
-                    <TabsContent value="past">
-                      <PatientTable patients={pastPatients} />
-                    </TabsContent>
-                  </Tabs>
+                  {loading && (
+                     <div className="space-y-2">
+                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-8 w-full" />
+                        <Skeleton className="h-8 w-full" />
+                     </div>
+                  )}
+                  {error && <p className="text-center text-red-500">{error}</p>}
+                  {!loading && !error && (
+                    <PatientTable patients={patients} />
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -221,7 +222,7 @@ export default function DoctorDashboard() {
                     </div>
                     <span className="font-semibold">4.5 (24 Reviews)</span>
                   </div>
-                </CardHeader>
+                </Header>
                 <CardContent className="grid gap-6">
                   {reviews.map((review, index) => (
                     <div key={index} className="flex gap-4">
@@ -250,25 +251,25 @@ export default function DoctorDashboard() {
   )
 }
 
-function PatientTable({ patients }: { patients: typeof upcomingPatients }) {
+function PatientTable({ patients }: { patients: Patient[] }) {
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>Patient</TableHead>
-          <TableHead className="hidden sm:table-cell">Last Visit</TableHead>
+          <TableHead className="hidden sm:table-cell">Joined On</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {patients.map((patient) => (
-          <TableRow key={patient.id}>
+          <TableRow key={patient.uid}>
             <TableCell>
-              <div className="font-medium">{patient.name}</div>
-              <div className="text-sm text-muted-foreground">{patient.id}</div>
+              <div className="font-medium">{patient.email.split('@')[0]}</div>
+              <div className="text-sm text-muted-foreground">{patient.email}</div>
             </TableCell>
             <TableCell className="hidden sm:table-cell">
-              {patient.lastVisit}
+              {patient.createdAt?.toDate().toLocaleDateString() ?? 'N/A'}
             </TableCell>
             <TableCell className="text-right">
               <DropdownMenu>
@@ -290,3 +291,5 @@ function PatientTable({ patients }: { patients: typeof upcomingPatients }) {
     </Table>
   )
 }
+
+    
