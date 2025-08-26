@@ -8,6 +8,7 @@ import { ArrowLeft, Search, Video, Users, Clock, IndianRupee, MapPin } from "luc
 import { collection, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { YogaCenter } from "@/lib/types/yoga"
+import { seedYogaCenters } from "@/lib/seed-data"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -41,14 +42,20 @@ export default function YogaBookingPage() {
       setError(null)
       try {
         const querySnapshot = await getDocs(collection(db, "yoga_centers"));
-        const centersData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as YogaCenter[];
-        setYogaCenters(centersData);
+        if (querySnapshot.empty) {
+            console.log("No yoga centers found in Firestore, using seed data.");
+            setYogaCenters(seedYogaCenters);
+        } else {
+            const centersData = querySnapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            })) as YogaCenter[];
+            setYogaCenters(centersData);
+        }
       } catch (e) {
         console.error("Error fetching yoga centers: ", e)
         setError("Failed to load yoga centers. Please try again later.")
+        setYogaCenters(seedYogaCenters);
       } finally {
         setLoading(false)
       }

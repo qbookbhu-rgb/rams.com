@@ -7,6 +7,7 @@ import { ArrowLeft, Search, FlaskConical, MapPin, Home, IndianRupee, Microscope,
 import { collection, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Lab } from "@/lib/types/labs"
+import { seedLabs } from "@/lib/seed-data"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -32,14 +33,20 @@ export default function LabTestsPage() {
       setError(null)
       try {
         const querySnapshot = await getDocs(collection(db, "labs"));
-        const labsData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Lab[];
-        setLabs(labsData);
+        if (querySnapshot.empty) {
+          console.log("No labs found in Firestore, using seed data.");
+          setLabs(seedLabs);
+        } else {
+            const labsData = querySnapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            })) as Lab[];
+            setLabs(labsData);
+        }
       } catch (e) {
         console.error("Error fetching labs: ", e)
-        setError("Failed to load labs. Please try again later.")
+        setError("Failed to load labs. Using sample data.")
+        setLabs(seedLabs);
       } finally {
         setLoading(false)
       }

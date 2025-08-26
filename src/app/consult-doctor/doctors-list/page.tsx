@@ -7,6 +7,7 @@ import { ArrowLeft, Search } from "lucide-react"
 import { collection, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Doctor } from "@/lib/types/doctors"
+import { seedDoctors } from "@/lib/seed-data"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -29,14 +30,20 @@ export default function DoctorsListPage() {
       setError(null)
       try {
         const querySnapshot = await getDocs(collection(db, "doctors"));
-        const doctorsData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Doctor[];
-        setDoctors(doctorsData);
+        if (querySnapshot.empty) {
+          console.log("No doctors found in Firestore, using seed data.");
+          setDoctors(seedDoctors);
+        } else {
+            const doctorsData = querySnapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            })) as Doctor[];
+            setDoctors(doctorsData);
+        }
       } catch (e) {
         console.error("Error fetching doctors: ", e)
-        setError("Failed to load doctors. Please try again later.")
+        setError("Failed to load doctors. Using sample data.")
+        setDoctors(seedDoctors); // Fallback to seed data on error
       } finally {
         setLoading(false)
       }
@@ -107,7 +114,7 @@ export default function DoctorsListPage() {
 
           {error && <p className="text-center text-red-500">{error}</p>}
 
-          {!loading && !error && doctors.map((doctor) => {
+          {!loading && doctors.map((doctor) => {
             const commission = doctor.consultationFee * 0.05
             const totalFee = doctor.consultationFee + commission
 

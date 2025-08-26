@@ -7,6 +7,7 @@ import { ArrowLeft, Search, Store, MapPin, Tag, Upload } from "lucide-react"
 import { collection, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { MedicalStore } from "@/lib/types/medical-stores"
+import { seedMedicalStores } from "@/lib/seed-data"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -30,14 +31,20 @@ export default function OrderMedicinesPage() {
       setError(null)
       try {
         const querySnapshot = await getDocs(collection(db, "medical_stores"));
-        const storesData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as MedicalStore[];
-        setStores(storesData);
+        if (querySnapshot.empty) {
+            console.log("No medical stores found in Firestore, using seed data.");
+            setStores(seedMedicalStores);
+        } else {
+            const storesData = querySnapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            })) as MedicalStore[];
+            setStores(storesData);
+        }
       } catch (e) {
         console.error("Error fetching medical stores: ", e)
-        setError("Failed to load medical stores. Please try again later.")
+        setError("Failed to load medical stores. Using sample data.")
+        setStores(seedMedicalStores);
       } finally {
         setLoading(false)
       }
