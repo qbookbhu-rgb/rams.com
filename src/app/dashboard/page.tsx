@@ -42,7 +42,7 @@ const quickAccessItems = [
     title: "Order Medicines",
     icon: Pill,
     description: "Get medicines delivered to your doorstep.",
-    href: "#",
+    href: "/order-medicines",
   },
   {
     title: "Diagnostic Tests",
