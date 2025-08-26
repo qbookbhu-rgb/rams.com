@@ -330,5 +330,3 @@ function AppointmentTable({ appointments }: { appointments: Appointment[] }) {
     </Table>
   )
 }
-
-    
