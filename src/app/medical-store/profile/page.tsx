@@ -29,6 +29,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Header } from "@/components/header"
 import { useToast } from "@/hooks/use-toast"
 import { updateMedicalStoreProfile } from "./actions"
+import { useEffect, useState } from "react"
+import { auth, db } from "@/lib/firebase"
+import { doc, getDoc } from "firebase/firestore"
+import { MedicalStore } from "@/lib/types/medical-stores"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const profileFormSchema = z.object({
   storeName: z.string().min(2, "Store name must be at least 2 characters."),
@@ -43,22 +48,42 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-const defaultValues: Partial<ProfileFormValues> = {
-  storeName: "Health Plus Pharmacy",
-  ownerName: "Anil Kumar",
-  address: "BHU Road, Varanasi",
-  licenseNo: "LIC12345",
-  contact: "9876543210",
-  offers: "10% off on Diabetes Medicines",
-}
-
 export default function MedicalStoreProfilePage() {
   const { toast } = useToast()
+  const [loading, setLoading] = useState(true)
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
+    defaultValues: {
+      storeName: "",
+      ownerName: "",
+      address: "",
+      licenseNo: "",
+      contact: "",
+      offers: "",
+    },
     mode: "onChange",
   })
+  
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        const fetchStoreData = async () => {
+          setLoading(true);
+          const docRef = doc(db, "medical_stores", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data() as MedicalStore;
+            form.reset(data);
+          }
+          setLoading(false);
+        };
+        fetchStoreData();
+      } else {
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, [form]);
 
   async function onSubmit(data: ProfileFormValues) {
     try {
@@ -83,6 +108,28 @@ export default function MedicalStoreProfilePage() {
       <Header />
       <main className="flex-1 bg-background p-4 md:p-8">
         <div className="mx-auto max-w-2xl">
+          {loading ? (
+             <Card>
+                <CardHeader>
+                  <CardTitle>Edit Medical Store Profile</CardTitle>
+                  <CardDescription>
+                    <Skeleton className="h-4 w-3/4" />
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <Skeleton className="h-24 w-full" />
+                   {Array.from({ length: 6 }).map((_, i) => (
+                      <div className="space-y-2" key={i}>
+                        <Skeleton className="h-4 w-1/4" />
+                        <Skeleton className="h-10 w-full" />
+                      </div>
+                    ))}
+                </CardContent>
+                 <CardFooter className="border-t px-6 py-4">
+                  <Skeleton className="h-10 w-32" />
+                </CardFooter>
+              </Card>
+          ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <Card>
@@ -224,6 +271,7 @@ export default function MedicalStoreProfilePage() {
               </Card>
             </form>
           </Form>
+          )}
         </div>
       </main>
     </div>

@@ -30,6 +30,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Header } from "@/components/header"
 import { useToast } from "@/hooks/use-toast"
 import { updateLabProfile } from "./actions"
+import { useEffect, useState } from "react"
+import { auth, db } from "@/lib/firebase"
+import { doc, getDoc } from "firebase/firestore"
+import { Lab } from "@/lib/types/labs"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const profileFormSchema = z.object({
   labName: z.string().min(2, "Lab name must be at least 2 characters."),
@@ -45,23 +50,44 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-const defaultValues: Partial<ProfileFormValues> = {
-  labName: "City Diagnostics",
-  technicianName: "Sanjay Verma",
-  address: "Godowlia, Varanasi",
-  registrationID: "REG4567",
-  services: "Blood Test, X-Ray, MRI",
-  charges: "Blood Test: ₹200, X-Ray: ₹500",
-  homeCollection: true,
-}
 
 export default function LabProfilePage() {
   const { toast } = useToast()
+  const [loading, setLoading] = useState(true)
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
+    defaultValues: {
+        labName: "",
+        technicianName: "",
+        address: "",
+        registrationID: "",
+        services: "",
+        charges: "",
+        homeCollection: false,
+    },
     mode: "onChange",
   })
+  
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        const fetchLabData = async () => {
+          setLoading(true);
+          const docRef = doc(db, "labs", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data() as Lab;
+            form.reset(data);
+          }
+          setLoading(false);
+        };
+        fetchLabData();
+      } else {
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, [form]);
 
   async function onSubmit(data: ProfileFormValues) {
     try {
@@ -87,6 +113,28 @@ export default function LabProfilePage() {
       <Header />
       <main className="flex-1 bg-background p-4 md:p-8">
         <div className="mx-auto max-w-2xl">
+          {loading ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Edit Lab Profile</CardTitle>
+                  <CardDescription>
+                    <Skeleton className="h-4 w-3/4" />
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <Skeleton className="h-24 w-full" />
+                   {Array.from({ length: 7 }).map((_, i) => (
+                      <div className="space-y-2" key={i}>
+                        <Skeleton className="h-4 w-1/4" />
+                        <Skeleton className="h-10 w-full" />
+                      </div>
+                    ))}
+                </CardContent>
+                 <CardFooter className="border-t px-6 py-4">
+                  <Skeleton className="h-10 w-32" />
+                </CardFooter>
+              </Card>
+          ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <Card>
@@ -248,6 +296,7 @@ export default function LabProfilePage() {
               </Card>
             </form>
           </Form>
+          )}
         </div>
       </main>
     </div>

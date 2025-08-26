@@ -30,6 +30,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Header } from "@/components/header"
 import { useToast } from "@/hooks/use-toast"
 import { updateYogaProfile } from "./actions"
+import { useEffect, useState } from "react"
+import { auth, db } from "@/lib/firebase"
+import { doc, getDoc } from "firebase/firestore"
+import { YogaCenter } from "@/lib/types/yoga"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const profileFormSchema = z.object({
   centerName: z.string().min(2, "Center name must be at least 2 characters."),
@@ -45,24 +50,45 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-const defaultValues: Partial<ProfileFormValues> = {
-  centerName: "Aatma Yoga Studio",
-  instructorName: "Priya Sharma",
-  address: "Lanka, Varanasi",
-  classTypes: "Hatha, Vinyasa, Ashtanga, Prenatal",
-  schedule: "Mon-Fri: 7-8 AM, 6-7 PM | Sat-Sun: 8-9:30 AM",
-  fee: "₹200/class, ₹2000/month",
-  onlineClasses: true,
-  bio: "Certified Yoga Alliance instructor with over 10 years of experience, specializing in traditional Hatha and Vinyasa flow. Join us to find balance and peace.",
-}
 
 export default function YogaProfilePage() {
   const { toast } = useToast()
+  const [loading, setLoading] = useState(true)
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
+    defaultValues: {
+      centerName: "",
+      instructorName: "",
+      address: "",
+      classTypes: "",
+      schedule: "",
+      fee: "",
+      onlineClasses: false,
+      bio: "",
+    },
     mode: "onChange",
   })
+  
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        const fetchYogaData = async () => {
+          setLoading(true);
+          const docRef = doc(db, "yoga_centers", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data() as YogaCenter;
+            form.reset(data);
+          }
+          setLoading(false);
+        };
+        fetchYogaData();
+      } else {
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, [form]);
 
   async function onSubmit(data: ProfileFormValues) {
     try {
@@ -88,6 +114,28 @@ export default function YogaProfilePage() {
       <Header />
       <main className="flex-1 bg-background p-4 md:p-8">
         <div className="mx-auto max-w-2xl">
+           {loading ? (
+             <Card>
+                <CardHeader>
+                  <CardTitle>Edit Yoga Center Profile</CardTitle>
+                  <CardDescription>
+                    <Skeleton className="h-4 w-3/4" />
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <Skeleton className="h-24 w-full" />
+                   {Array.from({ length: 8 }).map((_, i) => (
+                      <div className="space-y-2" key={i}>
+                        <Skeleton className="h-4 w-1/4" />
+                        <Skeleton className="h-10 w-full" />
+                      </div>
+                    ))}
+                </CardContent>
+                 <CardFooter className="border-t px-6 py-4">
+                  <Skeleton className="h-10 w-32" />
+                </CardFooter>
+              </Card>
+          ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <Card>
@@ -253,6 +301,7 @@ export default function YogaProfilePage() {
               </Card>
             </form>
           </Form>
+          )}
         </div>
       </main>
     </div>

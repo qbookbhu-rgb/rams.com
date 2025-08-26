@@ -36,6 +36,11 @@ import { Switch } from "@/components/ui/switch"
 import { Header } from "@/components/header"
 import { useToast } from "@/hooks/use-toast"
 import { updateAmbulanceProfile } from "./actions"
+import { useEffect, useState } from "react"
+import { auth, db } from "@/lib/firebase"
+import { doc, getDoc } from "firebase/firestore"
+import { Ambulance } from "@/lib/types/ambulance"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const profileFormSchema = z.object({
   driverName: z.string().min(2, "Driver name must be at least 2 characters."),
@@ -52,23 +57,43 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
-const defaultValues: Partial<ProfileFormValues> = {
-  driverName: "Ramesh Kumar",
-  numberPlate: "UP65AB1234",
-  vehicleType: "ICU Ambulance",
-  charges: "₹25/km",
-  status: true,
-  contact: "9876543210",
-  serviceArea: "Varanasi"
-}
-
 export default function AmbulanceProfilePage() {
   const { toast } = useToast()
+  const [loading, setLoading] = useState(true)
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
-    defaultValues,
+    defaultValues: {
+      driverName: "",
+      numberPlate: "",
+      vehicleType: undefined,
+      charges: "",
+      status: false,
+      contact: "",
+      serviceArea: ""
+    },
     mode: "onChange",
   })
+  
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (user) {
+        const fetchAmbulanceData = async () => {
+          setLoading(true);
+          const docRef = doc(db, "ambulances", user.uid);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data() as Ambulance;
+            form.reset(data);
+          }
+          setLoading(false);
+        };
+        fetchAmbulanceData();
+      } else {
+        setLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, [form]);
 
   async function onSubmit(data: ProfileFormValues) {
     try {
@@ -94,6 +119,28 @@ export default function AmbulanceProfilePage() {
       <Header />
       <main className="flex-1 bg-background p-4 md:p-8">
         <div className="mx-auto max-w-2xl">
+           {loading ? (
+             <Card>
+                <CardHeader>
+                  <CardTitle>Edit Ambulance Profile</CardTitle>
+                  <CardDescription>
+                    <Skeleton className="h-4 w-3/4" />
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <Skeleton className="h-24 w-full" />
+                   {Array.from({ length: 7 }).map((_, i) => (
+                      <div className="space-y-2" key={i}>
+                        <Skeleton className="h-4 w-1/4" />
+                        <Skeleton className="h-10 w-full" />
+                      </div>
+                    ))}
+                </CardContent>
+                 <CardFooter className="border-t px-6 py-4">
+                  <Skeleton className="h-10 w-32" />
+                </CardFooter>
+              </Card>
+          ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <Card>
@@ -155,7 +202,7 @@ export default function AmbulanceProfilePage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Vehicle Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select vehicle type" />
@@ -238,6 +285,7 @@ export default function AmbulanceProfilePage() {
               </Card>
             </form>
           </Form>
+          )}
         </div>
       </main>
     </div>
