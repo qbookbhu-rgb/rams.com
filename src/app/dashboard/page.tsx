@@ -2,6 +2,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import {
   Ambulance,
   FlaskConical,
@@ -34,21 +35,25 @@ const quickAccessItems = [
     title: "Doctor Consultation",
     icon: Stethoscope,
     description: "Consult with top doctors online.",
+    href: "/consult-doctor",
   },
   {
     title: "Order Medicines",
     icon: Pill,
     description: "Get medicines delivered to your doorstep.",
+    href: "#",
   },
   {
     title: "Diagnostic Tests",
     icon: FlaskConical,
     description: "Book lab tests from home.",
+    href: "#",
   },
   {
     title: "Ambulance & SOS",
     icon: Ambulance,
     description: "24/7 emergency ambulance service.",
+    href: "#",
   },
 ]
 
@@ -108,8 +113,8 @@ export default function PatientDashboard() {
                     <p className="text-xs text-muted-foreground">
                       {item.description}
                     </p>
-                    <Button size="sm" className="mt-4">
-                      Get Started
+                    <Button size="sm" className="mt-4" asChild>
+                      <Link href={item.href}>Get Started</Link>
                     </Button>
                   </CardContent>
                 </Card>
