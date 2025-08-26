@@ -108,8 +108,10 @@ export default function OrderMedicinesPage() {
                             <span>{store.offers}</span>
                         </div>
                     )}
-                     <Button className="w-full mt-2" size="lg">
-                        <Upload className="mr-2 h-4 w-4" /> Upload Prescription
+                     <Button className="w-full mt-2" size="lg" asChild>
+                        <Link href="/consult-doctor">
+                           <Upload className="mr-2 h-4 w-4" /> Upload Prescription
+                        </Link>
                     </Button>
                 </CardContent>
               </Card>

@@ -183,7 +183,9 @@ export default function YogaBookingPage() {
       </main>
       <footer className="sticky bottom-0 z-10 border-t bg-background p-4">
         <div className="mx-auto max-w-md">
-          <Button className="w-full" size="lg">Book a Slot</Button>
+          <Button className="w-full" size="lg" asChild>
+            <Link href="/consult-doctor">Book a Slot</Link>
+          </Button>
         </div>
       </footer>
     </div>

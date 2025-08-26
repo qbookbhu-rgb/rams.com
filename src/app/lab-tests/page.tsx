@@ -124,9 +124,11 @@ export default function LabTestsPage() {
                             <Home className="h-4 w-4"/> Home Sample Collection Available
                         </Badge>
                     )}
-                     <Button className="w-full mt-2" size="lg">
-                        <Stethoscope className="mr-2 h-4 w-4" />
-                        Book a Test
+                     <Button className="w-full mt-2" size="lg" asChild>
+                        <Link href="/consult-doctor">
+                           <Stethoscope className="mr-2 h-4 w-4" />
+                           Book a Test
+                        </Link>
                     </Button>
                 </CardContent>
               </Card>

@@ -10,7 +10,8 @@ import {
   Settings,
   User,
 } from "lucide-react"
-import { getAuth, onAuthStateChanged, User as FirebaseUser } from "firebase/auth"
+import { getAuth, onAuthStateChanged, User as FirebaseUser, signOut } from "firebase/auth"
+import { useRouter } from "next/navigation"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -24,10 +25,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { auth } from "@/lib/firebase"
+import { useToast } from "@/hooks/use-toast"
 
 
 export function UserNav() {
   const [user, setUser] = useState<FirebaseUser | null>(null)
+  const router = useRouter()
+  const { toast } = useToast()
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -35,6 +39,24 @@ export function UserNav() {
     })
     return () => unsubscribe()
   }, [])
+  
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      })
+      router.push("/")
+    } catch (error) {
+      console.error("Logout failed:", error)
+       toast({
+        variant: "destructive",
+        title: "Logout Failed",
+        description: "Could not log you out. Please try again.",
+      })
+    }
+  }
 
 
   return (
@@ -72,11 +94,9 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/">
+        <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
-          </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
