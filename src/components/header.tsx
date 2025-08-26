@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { HeartPulse, Search } from "lucide-react"
+import { HeartPulse, Search, ImageIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -75,10 +75,15 @@ export function Header() {
             RAMS.com
           </span>
         </Link>
-        <div className="flex flex-1 items-center justify-end space-x-4">
+        <div className="flex flex-1 items-center justify-end space-x-2">
            <Button variant="outline" size="sm" asChild>
               <Link href="/search">
                 <Search className="mr-2 h-4 w-4" /> AI Search
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/image-generator">
+                <ImageIcon className="mr-2 h-4 w-4" /> AI Image
               </Link>
             </Button>
           <nav className="flex items-center space-x-2">
