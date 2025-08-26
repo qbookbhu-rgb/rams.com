@@ -98,7 +98,7 @@ export default function LoginPage() {
           <div className="mx-auto mb-4 flex items-center justify-center">
             <HeartPulse className="h-10 w-10 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-bold font-headline">RAMS.com Lite</CardTitle>
+          <CardTitle className="text-3xl font-bold font-headline">RAMS.com</CardTitle>
           <CardDescription>Your trusted health partner. Login to continue.</CardDescription>
         </CardHeader>
         <CardContent>
