@@ -1,10 +1,13 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft, Search, Video, Users, Clock, IndianRupee, MapPin } from "lucide-react"
+import { collection, getDocs } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import { YogaCenter } from "@/lib/types/yoga"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -23,46 +26,43 @@ import {
   RadioGroupItem,
 } from "@/components/ui/radio-group"
 import { Separator } from "@/components/ui/separator"
-
-const yogaCenters = [
-  {
-    name: "Aatma Yoga Studio",
-    instructor: "Priya Sharma",
-    specialties: ["Hatha", "Vinyasa", "Prenatal"],
-    fee: 200,
-    rating: 4.9,
-    location: "Lanka, Varanasi",
-    timings: "7-8 AM, 6-7 PM",
-    avatar: "https://i.pravatar.cc/150?u=priya-yoga",
-    type: "Offline & Online"
-  },
-  {
-    name: "Shanti Wellness Hub",
-    instructor: "Rohan Gupta",
-    specialties: ["Ashtanga", "Power Yoga"],
-    fee: 300,
-    rating: 4.7,
-    location: "Sigra, Varanasi",
-    timings: "6-7 AM, 7-8 PM",
-    avatar: "https://i.pravatar.cc/150?u=rohan-yoga",
-    type: "Offline Only"
-  },
-  {
-    name: "Digital Yogi",
-    instructor: "Anjali Singh",
-    specialties: ["Meditation", "Yin Yoga", "Desk Yoga"],
-    fee: 250,
-    rating: 4.8,
-    location: "Online",
-    timings: "Flexible Schedule",
-    avatar: "https://i.pravatar.cc/150?u=anjali-yoga",
-    type: "Online Only"
-  },
-];
+import { Skeleton } from "@/components/ui/skeleton"
 
 
 export default function YogaBookingPage() {
   const [classType, setClassType] = useState("all")
+  const [yogaCenters, setYogaCenters] = useState<YogaCenter[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchYogaCenters = async () => {
+      setLoading(true)
+      setError(null)
+      try {
+        const querySnapshot = await getDocs(collection(db, "yoga_centers"));
+        const centersData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as YogaCenter[];
+        setYogaCenters(centersData);
+      } catch (e) {
+        console.error("Error fetching yoga centers: ", e)
+        setError("Failed to load yoga centers. Please try again later.")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchYogaCenters()
+  }, [])
+
+
+  const filteredCenters = yogaCenters.filter(center => 
+      classType === 'all' || 
+      (classType === 'online' && center.onlineClasses) ||
+      (classType === 'offline' && !center.onlineClasses)
+  )
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -102,30 +102,54 @@ export default function YogaBookingPage() {
             </CardContent>
           </Card>
 
-          {yogaCenters
-            .filter(center => 
-                classType === 'all' || 
-                (classType === 'online' && center.type.includes('Online')) ||
-                (classType === 'offline' && center.type.includes('Offline'))
-            )
-            .map((center, index) => (
-              <Card key={index} className="overflow-hidden">
+          {loading && (
+             Array.from({ length: 2 }).map((_, index) => (
+                <Card key={index} className="overflow-hidden">
+                    <CardContent className="p-4">
+                    <div className="flex items-start gap-4">
+                        <Skeleton className="h-24 w-24 rounded-lg" />
+                        <div className="flex-1 space-y-2">
+                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <div className="flex flex-wrap gap-1 pt-1">
+                            <Skeleton className="h-5 w-16" />
+                            <Skeleton className="h-5 w-20" />
+                        </div>
+                        <Skeleton className="h-4 w-2/3 mt-1" />
+                        </div>
+                    </div>
+                    <Separator className="my-3" />
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-1/2" />
+                    </div>
+                    </CardContent>
+                </Card>
+             ))
+          )}
+
+          {error && <p className="text-center text-red-500">{error}</p>}
+
+          {!loading && !error && filteredCenters.map((center) => (
+              <Card key={center.id} className="overflow-hidden">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
-                    <Avatar className="h-24 w-24 border">
-                      <AvatarImage src={center.avatar} />
-                      <AvatarFallback>{center.instructor.charAt(0)}</AvatarFallback>
+                    <Avatar className="h-24 w-24 border rounded-lg">
+                      <AvatarImage src={`https://i.pravatar.cc/150?u=${center.id}`} />
+                      <AvatarFallback>{center.instructorName.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 space-y-1">
-                      <h2 className="text-lg font-bold">{center.name}</h2>
-                      <p className="text-sm text-muted-foreground">by {center.instructor}</p>
+                      <h2 className="text-lg font-bold">{center.centerName}</h2>
+                      <p className="text-sm text-muted-foreground">by {center.instructorName}</p>
                       <div className="flex flex-wrap gap-1 pt-1">
-                        {center.specialties.map(spec => (
-                            <Badge key={spec} variant="secondary">{spec}</Badge>
+                        {center.classTypes.split(',').map(spec => (
+                            <Badge key={spec.trim()} variant="secondary">{spec.trim()}</Badge>
                         ))}
                       </div>
                       <p className="text-sm font-medium pt-1 flex items-center gap-1">
-                        <MapPin className="h-4 w-4" /> {center.location}
+                        <MapPin className="h-4 w-4" /> {center.address}
                       </p>
                     </div>
                   </div>
@@ -133,19 +157,20 @@ export default function YogaBookingPage() {
                   <div className="grid grid-cols-2 gap-2 text-sm">
                      <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4 text-muted-foreground" />
-                        <span>{center.timings}</span>
+                        <span>{center.schedule}</span>
                      </div>
                       <div className="flex items-center gap-2">
                         <IndianRupee className="h-4 w-4 text-muted-foreground" />
-                        <span>{center.fee} / class</span>
+                        <span>{center.fee}</span>
                      </div>
                       <div className="flex items-center gap-2">
-                         {center.type.includes("Online") && <Video className="h-4 w-4 text-muted-foreground" />}
-                         {center.type.includes("Offline") && <Users className="h-4 w-4 text-muted-foreground" />}
-                         <span>{center.type}</span>
+                         {center.onlineClasses && <Video className="h-4 w-4 text-muted-foreground" />}
+                         {!center.onlineClasses && <Users className="h-4 w-4 text-muted-foreground" />}
+                         <span>{center.onlineClasses ? "Online & Offline" : "Offline Only"}</span>
                       </div>
                        <div className="flex items-center gap-2 font-semibold text-amber-500">
-                         {center.rating} ★
+                         {/* Add rating field to yoga profile later */}
+                         4.8 ★
                       </div>
                   </div>
                 </CardContent>
@@ -161,3 +186,5 @@ export default function YogaBookingPage() {
     </div>
   )
 }
+
+    
