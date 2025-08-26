@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -132,7 +133,7 @@ export default function LoginPage() {
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">
             Don't have an account?{" "}
-            <Link href="#" className="underline" prefetch={false}>
+            <Link href="/signup" className="underline" prefetch={false}>
               Sign up
             </Link>
           </p>
