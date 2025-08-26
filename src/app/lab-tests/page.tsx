@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowLeft, Search, FlaskConical, MapPin, Home } from "lucide-react"
+import { ArrowLeft, Search, FlaskConical, MapPin, Home, IndianRupee, Microscope, Stethoscope } from "lucide-react"
 import { collection, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Lab } from "@/lib/types/labs"
@@ -66,15 +66,22 @@ export default function LabTestsPage() {
           {loading && (
              Array.from({ length: 3 }).map((_, index) => (
                 <Card key={index} className="overflow-hidden">
-                    <CardContent className="p-4">
-                    <div className="flex items-center gap-4">
-                        <Skeleton className="h-16 w-16 rounded-full" />
-                        <div className="flex-1 space-y-2">
-                            <Skeleton className="h-5 w-3/4" />
-                            <Skeleton className="h-4 w-1/2" />
-                            <Skeleton className="h-4 w-full" />
+                    <CardHeader>
+                        <div className="flex items-center gap-4">
+                            <Skeleton className="h-12 w-12 rounded-full" />
+                            <div className="flex-1 space-y-2">
+                                <Skeleton className="h-5 w-3/4" />
+                                <Skeleton className="h-4 w-1/2" />
+                            </div>
                         </div>
-                    </div>
+                    </CardHeader>
+                     <CardContent className="space-y-3">
+                       <Skeleton className="h-4 w-full" />
+                       <Skeleton className="h-4 w-1/2" />
+                       <Separator />
+                       <Skeleton className="h-4 w-1/4" />
+                       <Skeleton className="h-4 w-full" />
+                       <Skeleton className="h-10 w-full mt-2" />
                     </CardContent>
                 </Card>
              ))
@@ -101,17 +108,24 @@ export default function LabTestsPage() {
                         <span>{lab.address}</span>
                     </div>
                      <Separator />
-                    <p className="font-semibold">Services:</p>
-                    <p className="text-muted-foreground">{lab.services}</p>
-                    <p className="font-semibold">Charges:</p>
-                    <p className="text-muted-foreground">{lab.charges}</p>
-                     
+                     <div className="grid grid-cols-1 gap-2">
+                        <div className="flex items-start gap-2">
+                            <Microscope className="h-4 w-4 mt-0.5 shrink-0" />
+                             <p><span className="font-semibold">Services:</span> {lab.services}</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                            <IndianRupee className="h-4 w-4 mt-0.5 shrink-0" />
+                             <p><span className="font-semibold">Charges:</span> {lab.charges}</p>
+                        </div>
+                     </div>
+                    
                     {lab.homeCollection && (
                         <Badge variant="secondary" className="flex items-center gap-2 w-fit">
                             <Home className="h-4 w-4"/> Home Sample Collection Available
                         </Badge>
                     )}
-                     <Button className="w-full mt-2">
+                     <Button className="w-full mt-2" size="lg">
+                        <Stethoscope className="mr-2 h-4 w-4" />
                         Book a Test
                     </Button>
                 </CardContent>

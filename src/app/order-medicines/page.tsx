@@ -3,13 +3,12 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowLeft, Search, Store, MapPin, Tag } from "lucide-react"
+import { ArrowLeft, Search, Store, MapPin, Tag, Upload } from "lucide-react"
 import { collection, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { MedicalStore } from "@/lib/types/medical-stores"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -65,15 +64,19 @@ export default function OrderMedicinesPage() {
           {loading && (
              Array.from({ length: 3 }).map((_, index) => (
                 <Card key={index} className="overflow-hidden">
-                    <CardContent className="p-4">
-                    <div className="flex items-center gap-4">
-                        <Skeleton className="h-16 w-16 rounded-full" />
-                        <div className="flex-1 space-y-2">
-                            <Skeleton className="h-5 w-3/4" />
-                            <Skeleton className="h-4 w-1/2" />
-                            <Skeleton className="h-4 w-full" />
+                    <CardHeader>
+                        <div className="flex items-center gap-4">
+                            <Skeleton className="h-12 w-12 rounded-full" />
+                            <div className="flex-1 space-y-2">
+                                <Skeleton className="h-5 w-3/4" />
+                                <Skeleton className="h-4 w-1/2" />
+                            </div>
                         </div>
-                    </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                       <Skeleton className="h-4 w-full" />
+                       <Skeleton className="h-4 w-1/2" />
+                       <Skeleton className="h-10 w-full mt-2" />
                     </CardContent>
                 </Card>
              ))
@@ -105,8 +108,8 @@ export default function OrderMedicinesPage() {
                             <span>{store.offers}</span>
                         </div>
                     )}
-                     <Button className="w-full mt-2">
-                        Upload Prescription
+                     <Button className="w-full mt-2" size="lg">
+                        <Upload className="mr-2 h-4 w-4" /> Upload Prescription
                     </Button>
                 </CardContent>
               </Card>
