@@ -1,6 +1,9 @@
 
 "use client"
 
+import { useState, useEffect } from "react"
+import { doc, getDoc } from "firebase/firestore"
+import { auth, db } from "@/lib/firebase"
 import Link from "next/link"
 import {
   CircleDollarSign,
@@ -42,6 +45,8 @@ import {
 } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
+import { MedicalStore } from "@/lib/types/medical-stores"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const orders = [
   {
@@ -90,9 +95,43 @@ const reviews = [
 ]
 
 export default function MedicalStoreDashboard() {
+    const [storeData, setStoreData] = useState<MedicalStore | null>(null)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
     const totalEarnings = 45000.00
     const commissionPaid = totalEarnings * 0.05
     const netPayout = totalEarnings - commissionPaid
+
+     useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+        if (user) {
+            const fetchStoreData = async () => {
+            setLoading(true)
+            try {
+                const docRef = doc(db, "medical_stores", user.uid)
+                const docSnap = await getDoc(docRef)
+                if (docSnap.exists()) {
+                    setStoreData({ id: docSnap.id, ...docSnap.data() } as MedicalStore)
+                } else {
+                    setStoreData(null)
+                }
+            } catch (err) {
+                console.error("Error fetching store data: ", err)
+                setError("Failed to load your data. Please try again.")
+            } finally {
+                setLoading(false)
+            }
+            }
+            fetchStoreData()
+        } else {
+            setLoading(false)
+        }
+        })
+
+        return () => unsubscribe()
+    }, [])
+
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
@@ -211,12 +250,20 @@ export default function MedicalStoreDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Store Details</CardTitle>
-                  <CardDescription>Apollo Pharmacy</CardDescription>
+                   {loading ? (
+                        <Skeleton className="h-5 w-48" />
+                    ) : (
+                        <CardDescription>{storeData?.storeName || "Complete your profile"}</CardDescription>
+                    )}
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    License: DL12345XYZ
-                  </p>
+                    {loading ? (
+                        <Skeleton className="h-5 w-32" />
+                    ) : (
+                        <p className="text-sm text-muted-foreground">
+                           License: {storeData?.licenseNo || "N/A"}
+                        </p>
+                    )}
                    <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
                      <Link href="/medical-store/profile">
                         <Pencil className="mr-2 h-4 w-4" /> Edit Store Info
@@ -230,7 +277,7 @@ export default function MedicalStoreDashboard() {
                    <CardDescription>
                     Review your earnings and withdraw.
                   </CardDescription>
-                </CardHeader>
+                </Header>
                  <CardContent className="grid gap-3 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Total Sales</span>
@@ -358,3 +405,5 @@ function OrderTable({ orders }: { orders: typeof orders }) {
     </Table>
   )
 }
+
+    

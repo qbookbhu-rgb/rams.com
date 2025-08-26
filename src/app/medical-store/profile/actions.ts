@@ -36,3 +36,5 @@ export async function updateMedicalStoreProfile(data: ProfileFormValues) {
     throw new Error("Failed to save profile to the database.");
   }
 }
+
+    
