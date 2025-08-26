@@ -71,7 +71,6 @@ const reviews = [
 
 export default function DoctorDashboard() {
   const [doctorData, setDoctorData] = useState<Doctor | null>(null);
-  const [patients, setPatients] = useState<Patient[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,17 +94,12 @@ export default function DoctorDashboard() {
             } else {
                setDoctorData(null); // Or handle case where profile is not created
             }
-
-            // Fetch patients (this is a simplified example, in a real app you'd fetch patients with appointments)
-            const patientsQuery = query(collection(db, "users"), where("role", "==", "patient"));
-            const patientsSnapshot = await getDocs(patientsQuery);
-            const patientsData = patientsSnapshot.docs.map(doc => ({...doc.data(), uid: doc.id }) as Patient);
-            setPatients(patientsData);
             
             // Fetch appointments for this doctor
             const appointmentsQuery = query(collection(db, "appointments"), where("doctorId", "==", user.uid));
             const appointmentsSnapshot = await getDocs(appointmentsQuery);
             const appointmentsData = appointmentsSnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }) as Appointment);
+             appointmentsData.sort((a, b) => new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime());
             setAppointments(appointmentsData);
 
           } catch (e) {
@@ -139,7 +133,7 @@ export default function DoctorDashboard() {
               <Card>
                 <CardHeader className="flex flex-row items-start gap-4">
                   <Avatar className="h-20 w-20 border">
-                    <AvatarImage src={`https://i.pravatar.cc/150?u=${doctorData?.userId}`} />
+                    <AvatarImage src={`https://i.pravatar.cc/150?u=${doctorData?.id}`} />
                     <AvatarFallback>DR</AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
@@ -209,8 +203,10 @@ export default function DoctorDashboard() {
                         <Calendar className="h-4 w-4 mr-2" />
                         <span>{appointments.length} upcoming appointments</span>
                     </div>
-                    <Button className="w-full">
+                    <Button className="w-full" asChild>
+                       <Link href="/doctor/profile">
                         <Pencil className="mr-2 h-4 w-4" /> Add / Edit Slots
+                       </Link>
                     </Button>
                 </CardContent>
               </Card>
@@ -313,7 +309,7 @@ function AppointmentTable({ appointments }: { appointments: Appointment[] }) {
             </TableCell>
             <TableCell>{new Date(appointment.appointmentDate).toLocaleDateString()}</TableCell>
             <TableCell>{appointment.timeSlot}</TableCell>
-            <TableCell>{appointment.consultationMode}</TableCell>
+            <TableCell className="capitalize">{appointment.consultationMode}</TableCell>
             <TableCell className="text-right">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
