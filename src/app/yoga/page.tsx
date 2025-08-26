@@ -192,7 +192,7 @@ export default function YogaDashboard() {
                    <CardDescription>
                     Review your earnings and withdraw.
                   </CardDescription>
-                </CardHeader>
+                </Header>
                  <CardContent className="grid gap-3 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Total Bookings</span>
