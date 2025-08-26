@@ -20,24 +20,57 @@ import {
 
 const doctors = [
   {
-    name: "Dr. Aamir Ry",
+    name: "Dr. Ramesh Gupta",
     specialization: "Cardiologist",
-    onlineFee: 500,
-    offlineFee: 700,
-    clinicName: "Heart Care Clinic",
-    timings: "2 PM - 6 PM",
-    avatar: "https://i.pravatar.cc/150?u=aamir",
+    experience: "15 years",
+    onlineFee: 800,
+    offlineFee: 1000,
+    clinicName: "Gupta Heart Clinic",
+    timings: "10 AM - 1 PM",
+    avatar: "https://i.pravatar.cc/150?u=ramesh",
   },
   {
     name: "Dr. Priya Sharma",
     specialization: "Dermatologist",
-    onlineFee: 450,
-    offlineFee: 600,
+    experience: "8 years",
+    onlineFee: 600,
+    offlineFee: 750,
     clinicName: "Skin & Hair Clinic",
-    timings: "10 AM - 1 PM",
+    timings: "11 AM - 2 PM",
     avatar: "https://i.pravatar.cc/150?u=priya",
   },
-]
+  {
+    name: "Dr. Vikram Singh",
+    specialization: "Orthopedic Surgeon",
+    experience: "20 years",
+    onlineFee: 900,
+    offlineFee: 1200,
+    clinicName: "Bone & Joint Center",
+    timings: "4 PM - 7 PM",
+    avatar: "https://i.pravatar.cc/150?u=vikram",
+  },
+  {
+    name: "Dr. Anjali Desai",
+    specialization: "Pediatrician",
+    experience: "12 years",
+    onlineFee: 500,
+    offlineFee: 600,
+    clinicName: "Child Health Care",
+    timings: "9 AM - 12 PM",
+    avatar: "https://i.pravatar.cc/150?u=anjali",
+  },
+  {
+    name: "Dr. Sanjay Patel",
+    specialization: "General Physician",
+    experience: "18 years",
+    onlineFee: 400,
+    offlineFee: 500,
+    clinicName: "Family Health Clinic",
+    timings: "Mon-Sat, 9 AM - 6 PM",
+    avatar: "https://i.pravatar.cc/150?u=sanjay",
+  },
+];
+
 
 export default function ConsultDoctorPage() {
   const [consultationType, setConsultationType] = useState("offline")
@@ -85,13 +118,14 @@ export default function ConsultDoctorPage() {
             <Card key={index} className="overflow-hidden">
               <CardContent className="p-4">
                 <div className="flex items-start gap-4">
-                  <Avatar className="h-20 w-20 border">
+                  <Avatar className="h-24 w-24 border">
                     <AvatarImage src={doctor.avatar} />
                     <AvatarFallback>{doctor.name.charAt(4)}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 space-y-1">
                     <h2 className="text-lg font-bold">{doctor.name}</h2>
                     <p className="text-muted-foreground">{doctor.specialization}</p>
+                     <p className="text-sm text-muted-foreground">{doctor.experience} experience</p>
                     <div className="flex items-baseline gap-2 font-semibold">
                       <span className="text-xl">₹{doctor.onlineFee}</span>
                       <span className="text-sm text-muted-foreground">Online</span>
