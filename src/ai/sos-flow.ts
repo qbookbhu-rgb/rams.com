@@ -65,9 +65,12 @@ const prompt = ai.definePrompt({
 
     Follow these steps meticulously:
     1.  Filter the list to include ONLY ambulances that are currently online (status is true).
-    2.  If an 'emergencyDescription' is provided (e.g., 'severe chest pain', 'accident with bleeding'), analyze it to determine the required type of ambulance. Prioritize vehicle types like 'Cardiac', 'ICU Ambulance', or 'Advanced Life Support' for serious conditions. If no description is given or it's vague, treat all ambulance types as a lower priority factor.
+    2.  If an 'emergencyDescription' is provided, analyze it to determine the required type of ambulance. Prioritize vehicle types like 'Cardiac', 'ICU Ambulance', or 'Advanced Life Support' for serious conditions. For example:
+        - If description contains "chest pain", "heart attack", "breathing issue", prioritize 'Cardiac' or 'ICU Ambulance'.
+        - If description contains "accident", "bleeding", "trauma", "injury", prioritize 'Advanced Life Support' or 'ICU Ambulance'.
+        - If description is vague (e.g., "unwell") or not provided, treat all online ambulances equally in terms of type.
     3.  For each online ambulance, use the getDistance tool to calculate its distance from the user's location.
-    4.  Sort the ambulances based on two factors: first by suitability (if a specific type is needed) and then by distance (nearest to farthest).
+    4.  Sort the ambulances based on suitability (if a specific type is needed) and then by distance (nearest to farthest).
     5.  Return the top 3 most appropriate and nearest online ambulances.
 
     User Location: Latitude: {{{userLocation.latitude}}}, Longitude: {{{userLocation.longitude}}}
