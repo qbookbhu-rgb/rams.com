@@ -153,8 +153,8 @@ export default function ConsultDoctorPage() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="absolute left-0 -translate-x-1/2" />
-              <CarouselNext className="absolute right-0 translate-x-1/2" />
+              <CarouselPrevious className="absolute left-[-16px]" />
+              <CarouselNext className="absolute right-[-16px]" />
             </Carousel>
           </section>
 
@@ -192,8 +192,8 @@ export default function ConsultDoctorPage() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="absolute left-0 -translate-x-1/2" />
-              <CarouselNext className="absolute right-0 translate-x-1/2" />
+              <CarouselPrevious className="absolute left-[-16px]" />
+              <CarouselNext className="absolute right-[-16px]" />
             </Carousel>
           </section>
 
@@ -202,5 +202,3 @@ export default function ConsultDoctorPage() {
     </div>
   )
 }
-
-    
