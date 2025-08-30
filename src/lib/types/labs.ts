@@ -10,4 +10,5 @@ export interface Lab {
     homeCollection: boolean;
     userId: string;
     updatedAt: any;
+    contact?: string;
 }

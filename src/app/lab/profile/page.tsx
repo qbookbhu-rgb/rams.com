@@ -46,6 +46,7 @@ const profileFormSchema = z.object({
   charges: z.string().min(1, "Charges are required."),
   certificate: z.any().optional(),
   homeCollection: z.boolean().default(false),
+  contact: z.string().min(10, "Contact number is required."),
 })
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
@@ -64,6 +65,7 @@ export default function LabProfilePage() {
         services: "",
         charges: "",
         homeCollection: false,
+        contact: "",
     },
     mode: "onChange",
   })
@@ -123,7 +125,7 @@ export default function LabProfilePage() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <Skeleton className="h-24 w-full" />
-                   {Array.from({ length: 7 }).map((_, i) => (
+                   {Array.from({ length: 8 }).map((_, i) => (
                       <div className="space-y-2" key={i}>
                         <Skeleton className="h-4 w-1/4" />
                         <Skeleton className="h-10 w-full" />
@@ -206,6 +208,19 @@ export default function LabProfilePage() {
                         <FormDescription>
                           This will be used to show your lab on the map.
                         </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="contact"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Contact Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Lab contact number" {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}

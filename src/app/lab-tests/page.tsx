@@ -82,7 +82,7 @@ export default function LabTestsPage() {
                             </div>
                         </div>
                     </CardHeader>
-                     <CardContent className="space-y-3">
+                     <CardContent className="space-y-3 p-4 pt-0">
                        <Skeleton className="h-4 w-full" />
                        <Skeleton className="h-4 w-1/2" />
                        <Separator />
@@ -109,7 +109,7 @@ export default function LabTestsPage() {
                         </div>
                     </div>
                  </CardHeader>
-                <CardContent className="space-y-3 text-sm">
+                <CardContent className="space-y-3 text-sm p-4 pt-0">
                     <div className="flex items-start gap-2 text-muted-foreground">
                         <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
                         <span>{lab.address}</span>

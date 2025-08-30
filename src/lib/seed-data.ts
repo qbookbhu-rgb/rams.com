@@ -501,45 +501,6 @@ export const seedDoctors: Doctor[] = [
 ];
 
 
-export const seedLabs: Lab[] = [
-    {
-        id: "lab1",
-        labName: "Modern Pathology Lab",
-        technicianName: "Mr. Rakesh Singh",
-        address: "Bhelupur, Varanasi",
-        registrationID: "LABVNS001",
-        services: "Blood Test, Urine Test, Sugar Test, Thyroid Profile",
-        charges: "Varies per test. Basic blood test starts at ₹150.",
-        homeCollection: true,
-        userId: "seed_lab1",
-        updatedAt: new Date(),
-    },
-     {
-        id: "lab2",
-        labName: "Accurate Diagnostics",
-        technicianName: "Ms. Sunita Patel",
-        address: "Lanka, Varanasi",
-        registrationID: "LABVNS002",
-        services: "X-Ray, Ultrasound, CT Scan, MRI",
-        charges: "X-Ray starts at ₹300. Advanced imaging as per rate card.",
-        homeCollection: false,
-        userId: "seed_lab2",
-        updatedAt: new Date(),
-    },
-     {
-        id: "lab3",
-        labName: "Varanasi Health Scans",
-        technicianName: "Mr. Anand Kumar",
-        address: "Mahmoorganj, Varanasi",
-        registrationID: "LABVNS003",
-        services: "Full Body Checkup, Cardiac Markers, Cancer Markers",
-        charges: "Health packages start from ₹999.",
-        homeCollection: true,
-        userId: "seed_lab3",
-        updatedAt: new Date(),
-    }
-];
-
 export const seedMedicalStores: MedicalStore[] = [
   {
     id: "1",
@@ -815,4 +776,68 @@ export const seedAmbulances: Ambulance[] = [
     updatedAt: new Date(),
     location: { latitude: 25.2760, longitude: 82.9925 },
   },
+];
+
+
+export const seedLabs: Lab[] = [
+    {
+        id: "lab101",
+        labName: "बनारस पैथोलॉजी",
+        technicianName: "Tech Team",
+        address: "लक्सा रोड, वाराणसी",
+        registrationID: "LABVNS101",
+        services: "CBC, LIPID प्रोफाइल, थायराइड परीक्षण, ब्लड शुगर",
+        charges: "Varies per test",
+        homeCollection: true,
+        userId: "seed_lab101",
+        updatedAt: new Date(),
+    },
+     {
+        id: "lab102",
+        labName: "गंगा डायग्नोस्टिक्स",
+        technicianName: "Tech Team",
+        address: "लंका रोड, वाराणसी",
+        registrationID: "LABVNS102",
+        services: "MRI, CT Scan, X-Ray, अल्ट्रासाउंड",
+        charges: "Varies per test",
+        homeCollection: false,
+        userId: "seed_lab102",
+        updatedAt: new Date(),
+    },
+     {
+        id: "lab103",
+        labName: "काशी लैब",
+        technicianName: "Tech Team",
+        address: "महमूरगंज, वाराणसी",
+        registrationID: "LABVNS103",
+        services: "फुल बॉडी चेकअप, डायबिटीज़ पैकेज",
+        charges: "Packages available",
+        homeCollection: true,
+        userId: "seed_lab103",
+        updatedAt: new Date(),
+    },
+    {
+        id: "lab104",
+        labName: "वाराणसी पैथलैब",
+        technicianName: "Tech Team",
+        address: "सिगरा, वाराणसी",
+        registrationID: "LABVNS104",
+        services: "हार्मोन टेस्ट, विटामिन टेस्ट",
+        charges: "Varies per test",
+        homeCollection: true,
+        userId: "seed_lab104",
+        updatedAt: new Date(),
+    },
+    {
+        id: "lab105",
+        labName: "पूर्वांचल पैथोलॉजी",
+        technicianName: "Tech Team",
+        address: "भेलूपुर, वाराणसी",
+        registrationID: "LABVNS105",
+        services: "होम सैंपल कलेक्शन",
+        charges: "Varies per test",
+        homeCollection: true,
+        userId: "seed_lab105",
+        updatedAt: new Date(),
+    }
 ];

@@ -13,6 +13,7 @@ const profileFormSchema = z.object({
   services: z.string().min(5, "Services are required."),
   charges: z.string().min(1, "Charges are required."),
   homeCollection: z.boolean().default(false),
+  contact: z.string().min(10, "Contact number is required."),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
