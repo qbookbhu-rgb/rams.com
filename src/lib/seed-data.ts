@@ -359,40 +359,184 @@ export const seedLabs: Lab[] = [
 ];
 
 export const seedMedicalStores: MedicalStore[] = [
-    {
-        id: "ms1",
-        storeName: "Apollo Pharmacy",
-        ownerName: "Mr. Suresh Gupta",
-        address: "Sigra, Varanasi",
-        licenseNo: "UPVNS12345",
-        contact: "8876543210",
-        offers: "15% off on all medicines",
-        userId: "seed_ms1",
-        updatedAt: new Date(),
-    },
-    {
-        id: "ms2",
-        storeName: "Jeevan Medicals",
-        ownerName: "Mr. Dinesh Sharma",
-        address: "Lanka, Varanasi",
-        licenseNo: "UPVNS67890",
-        contact: "8876543211",
-        offers: "24/7 Service Available",
-        userId: "seed_ms2",
-        updatedAt: new Date(),
-    },
-    {
-        id: "ms3",
-        storeName: "Kashi Medicos",
-        ownerName: "Mr. Rajan Mishra",
-        address: "Chowk, Varanasi",
-        licenseNo: "UPVNS11223",
-        contact: "8876543212",
-        offers: "Free home delivery within 5km",
-        userId: "seed_ms3",
-        updatedAt: new Date(),
-    }
+  {
+    id: "1",
+    storeName: "अरविंद मेडिकल स्टोर",
+    ownerName: "Arvind Ji",
+    address: "सोनिया रोड, कस्तूरबा नगर, सिगरा, वाराणसी, उत्तर प्रदेश 221010",
+    licenseNo: "UPVNS001",
+    contact: "+91 81125 55777",
+    offers: "होम डिलीवरी, ब्लड टेस्ट की सुविधा (सुबह 9:00 बजे से रात 10:00 बजे तक)",
+    userId: "seed_ms1",
+    updatedAt: new Date()
+  },
+  {
+    id: "2",
+    storeName: "बनारस फार्मेसी",
+    ownerName: "Owner",
+    address: "सोनी रोड, कस्तूरबा नगर, सिगरा, वाराणसी, उत्तर प्रदेश 221010",
+    licenseNo: "UPVNS002",
+    contact: "+91 98380 12345",
+    offers: "24 घंटे खुली रहती है, सभी एलोपैथिक दवाएं",
+    userId: "seed_ms2",
+    updatedAt: new Date()
+  },
+  {
+    id: "3",
+    storeName: "मेडीवेरी फार्मेसी",
+    ownerName: "Owner",
+    address: "सिगरा, वाराणसी, उत्तर प्रदेश 221010",
+    licenseNo: "UPVNS003",
+    contact: "+91 70000 54321",
+    offers: "ऑनलाइन डिलीवरी, त्वरित सेवा (सुबह 8:00 बजे से रात 11:00 बजे तक)",
+    userId: "seed_ms3",
+    updatedAt: new Date()
+  },
+  {
+    id: "4",
+    storeName: "दवा मेडिकल एंड जनरल स्टोर्स",
+    ownerName: "Owner",
+    address: "माधव मार्केट, लंका, वाराणसी, उत्तर प्रदेश 221005",
+    licenseNo: "UPVNS004",
+    contact: "+91 94500 11111",
+    offers: "जनरल और सर्जिकल आइटम (सुबह 9:00 बजे से रात 9:00 बजे तक)",
+    userId: "seed_ms4",
+    updatedAt: new Date()
+  },
+  {
+    id: "5",
+    storeName: "अमर मेडिकल",
+    ownerName: "Owner",
+    address: "बीएचयू परिसर के पास, लंका, वाराणसी, उत्तर प्रदेश 221005",
+    licenseNo: "UPVNS005",
+    contact: "+91 80000 22222",
+    offers: "कॉस्मेटिक उत्पाद (सुबह 9:30 बजे से रात 10:30 बजे तक)",
+    userId: "seed_ms5",
+    updatedAt: new Date()
+  },
+  {
+    id: "6",
+    storeName: "न्यू रेखा मेडिकल एंड जनरल स्टोर",
+    ownerName: "Owner",
+    address: "बीएचयू गेट के पास, लंका, वाराणसी, उत्तर प्रदेश 221005",
+    licenseNo: "UPVNS006",
+    contact: "+91 93350 33333",
+    offers: "24 घंटे खुली रहती है",
+    userId: "seed_ms6",
+    updatedAt: new Date()
+  },
+  {
+    id: "7",
+    storeName: "उमंग फार्मेसी",
+    ownerName: "Owner",
+    address: "सर सुंदरलाल अस्पताल, बीएचयू, लंका, वाराणसी, उत्तर प्रदेश 221005",
+    licenseNo: "UPVNS007",
+    contact: "+91 88888 44444",
+    offers: "हॉस्पिटल फार्मेसी, 24 घंटे खुली रहती है",
+    userId: "seed_ms7",
+    updatedAt: new Date()
+  },
+  {
+    id: "8",
+    storeName: "सिद्धेश्वरी मेडिकल स्टोर",
+    ownerName: "Owner",
+    address: "डीएलडब्ल्यू, मंडुआडीह, वाराणसी, उत्तर प्रदेश 221004",
+    licenseNo: "UPVNS008",
+    contact: "+91 94150 55555",
+    offers: "सभी प्रकार की दवाएं (सुबह 9:00 बजे से रात 9:30 बजे तक)",
+    userId: "seed_ms8",
+    updatedAt: new Date()
+  },
+  {
+    id: "9",
+    storeName: "राज मेडिकल हॉल",
+    ownerName: "Owner",
+    address: "डीएलडब्ल्यू के पास, मंडुआडीह, वाराणसी, उत्तर प्रदेश 221004",
+    licenseNo: "UPVNS009",
+    contact: "+91 93360 66666",
+    offers: "एलोपैथिक, आयुर्वेदिक और पशु चिकित्सा दवाएं (सुबह 8:00 बजे से रात 10:00 बजे तक)",
+    userId: "seed_ms9",
+    updatedAt: new Date()
+  },
+  {
+    id: "10",
+    storeName: "शर्मा मेडिकल हॉल",
+    ownerName: "Owner",
+    address: "डीएलडब्ल्यू के पास, मंडुआडीह, वाराणसी, उत्तर प्रदेश 221004",
+    licenseNo: "UPVNS010",
+    contact: "+91 94510 77777",
+    offers: "सभी दवाएं उपलब्ध (सुबह 9:00 बजे से रात 9:00 बजे तक)",
+    userId: "seed_ms10",
+    updatedAt: new Date()
+  },
+  {
+    id: "11",
+    storeName: "जी.पी. मेडिकल्स",
+    ownerName: "Owner",
+    address: "चेतगंज, वाराणसी, उत्तर प्रदेश 221001",
+    licenseNo: "UPVNS011",
+    contact: "+91 99561 26545",
+    offers: "50 वर्षों से सेवा, होम डिलीवरी, सस्ती दवाएं (सुबह 10:00 बजे से रात 10:00 बजे तक)",
+    userId: "seed_ms11",
+    updatedAt: new Date()
+  },
+  {
+    id: "12",
+    storeName: "फैजान मेडिकल स्टोर",
+    ownerName: "Owner",
+    address: "लालापुरा, चेतगंज, वाराणसी, उत्तर प्रदेश 221001",
+    licenseNo: "UPVNS012",
+    contact: "+91 94550 88888",
+    offers: "विश्वसनीय सेवा (सुबह 9:00 बजे से रात 9:00 बजे तक)",
+    userId: "seed_ms12",
+    updatedAt: new Date()
+  },
+  {
+    id: "13",
+    storeName: "दवा दोस्त",
+    ownerName: "Owner",
+    address: "रेलवे स्टेशन परिसर के अंदर, वाराणसी जंक्शन, वाराणसी, उत्तर प्रदेश 221002",
+    licenseNo: "UPVNS013",
+    contact: "+91 94150 99999",
+    offers: "24 घंटे खुली रहती है",
+    userId: "seed_ms13",
+    updatedAt: new Date()
+  },
+  {
+    id: "14",
+    storeName: "प्रधानमंत्री जन औषधि केंद्र",
+    ownerName: "Government",
+    address: "विद्यापीठ रोड, वाराणसी कैंट, वाराणसी, उत्तर प्रदेश 221002",
+    licenseNo: "UPVNS014",
+    contact: "+91 94116 94605",
+    offers: "जेनेरिक दवाएं (सुबह 10:00 बजे से रात 9:00 बजे तक)",
+    userId: "seed_ms14",
+    updatedAt: new Date()
+  },
+  {
+    id: "15",
+    storeName: "पुरी मेडिकल शॉप",
+    ownerName: "Owner",
+    address: "इंग्लिशिया लाइन रोड, कैंटोनमेंट, वाराणसी, उत्तर प्रदेश 221002",
+    licenseNo: "UPVNS015",
+    contact: "+91 94512 11111",
+    offers: "त्वरित सेवा (सुबह 9:30 बजे से रात 9:30 बजे तक)",
+    userId: "seed_ms15",
+    updatedAt: new Date()
+  },
+  {
+    id: "500",
+    storeName: "जन सेवा औषाधालय",
+    ownerName: "Owner",
+    address: "गोविंद स्वीट्स के पास, आर्डरली बाजार, वाराणसी, उत्तर प्रदेश 221002",
+    licenseNo: "UPVNS500",
+    contact: "+91 94155 99999",
+    offers: "सुविधाजनक स्थान (सुबह 9:00 बजे से रात 9:00 बजे तक)",
+    userId: "seed_ms500",
+    updatedAt: new Date()
+  }
 ];
+
 
 export const seedYogaCenters: YogaCenter[] = [
     {
