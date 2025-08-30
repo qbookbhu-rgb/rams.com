@@ -1,4 +1,5 @@
 
+import { Ambulance } from './types/ambulance';
 import { Doctor } from './types/doctors';
 import { Lab } from './types/labs';
 import { MedicalStore } from './types/medical-stores';
@@ -547,7 +548,7 @@ export const seedMedicalStores: MedicalStore[] = [
     address: "सोनिया रोड, कस्तूरबा नगर, सिगरा, वाराणसी, उत्तर प्रदेश 221010",
     licenseNo: "UPVNS001",
     contact: "+91 81125 55777",
-    offers: "होम डिलीवरी, ब्लड टेस्ट की सुविधा (सुबह 9:00 बजे से रात 10:00 बजे तक)",
+    offers: "होम डिलीवरी, ब्लड टेस्ट की सुविधा",
     userId: "seed_ms1",
     updatedAt: new Date()
   },
@@ -569,7 +570,7 @@ export const seedMedicalStores: MedicalStore[] = [
     address: "सिगरा, वाराणसी, उत्तर प्रदेश 221010",
     licenseNo: "UPVNS003",
     contact: "+91 70000 54321",
-    offers: "ऑनलाइन डिलीवरी, त्वरित सेवा (सुबह 8:00 बजे से रात 11:00 बजे तक)",
+    offers: "ऑनलाइन डिलीवरी, त्वरित सेवा",
     userId: "seed_ms3",
     updatedAt: new Date()
   },
@@ -580,7 +581,7 @@ export const seedMedicalStores: MedicalStore[] = [
     address: "माधव मार्केट, लंका, वाराणसी, उत्तर प्रदेश 221005",
     licenseNo: "UPVNS004",
     contact: "+91 94500 11111",
-    offers: "जनरल और सर्जिकल आइटम (सुबह 9:00 बजे से रात 9:00 बजे तक)",
+    offers: "जनरल और सर्जिकल आइटम",
     userId: "seed_ms4",
     updatedAt: new Date()
   },
@@ -591,7 +592,7 @@ export const seedMedicalStores: MedicalStore[] = [
     address: "बीएचयू परिसर के पास, लंका, वाराणसी, उत्तर प्रदेश 221005",
     licenseNo: "UPVNS005",
     contact: "+91 80000 22222",
-    offers: "कॉस्मेटिक उत्पाद (सुबह 9:30 बजे से रात 10:30 बजे तक)",
+    offers: "कॉस्मेटिक उत्पाद",
     userId: "seed_ms5",
     updatedAt: new Date()
   },
@@ -624,7 +625,7 @@ export const seedMedicalStores: MedicalStore[] = [
     address: "डीएलडब्ल्यू, मंडुआडीह, वाराणसी, उत्तर प्रदेश 221004",
     licenseNo: "UPVNS008",
     contact: "+91 94150 55555",
-    offers: "सभी प्रकार की दवाएं (सुबह 9:00 बजे से रात 9:30 बजे तक)",
+    offers: "सभी प्रकार की दवाएं",
     userId: "seed_ms8",
     updatedAt: new Date()
   },
@@ -635,7 +636,7 @@ export const seedMedicalStores: MedicalStore[] = [
     address: "डीएलडब्ल्यू के पास, मंडुआडीह, वाराणसी, उत्तर प्रदेश 221004",
     licenseNo: "UPVNS009",
     contact: "+91 93360 66666",
-    offers: "एलोपैथिक, आयुर्वेदिक और पशु चिकित्सा दवाएं (सुबह 8:00 बजे से रात 10:00 बजे तक)",
+    offers: "एलोपैथिक, आयुर्वेदिक और पशु चिकित्सा दवाएं",
     userId: "seed_ms9",
     updatedAt: new Date()
   },
@@ -646,7 +647,7 @@ export const seedMedicalStores: MedicalStore[] = [
     address: "डीएलडब्ल्यू के पास, मंडुआडीह, वाराणसी, उत्तर प्रदेश 221004",
     licenseNo: "UPVNS010",
     contact: "+91 94510 77777",
-    offers: "सभी दवाएं उपलब्ध (सुबह 9:00 बजे से रात 9:00 बजे तक)",
+    offers: "सभी दवाएं उपलब्ध",
     userId: "seed_ms10",
     updatedAt: new Date()
   },
@@ -657,7 +658,7 @@ export const seedMedicalStores: MedicalStore[] = [
     address: "चेतगंज, वाराणसी, उत्तर प्रदेश 221001",
     licenseNo: "UPVNS011",
     contact: "+91 99561 26545",
-    offers: "50 वर्षों से सेवा, होम डिलीवरी, सस्ती दवाएं (सुबह 10:00 बजे से रात 10:00 बजे तक)",
+    offers: "50 वर्षों से सेवा, होम डिलीवरी, सस्ती दवाएं",
     userId: "seed_ms11",
     updatedAt: new Date()
   },
@@ -668,7 +669,7 @@ export const seedMedicalStores: MedicalStore[] = [
     address: "लालापुरा, चेतगंज, वाराणसी, उत्तर प्रदेश 221001",
     licenseNo: "UPVNS012",
     contact: "+91 94550 88888",
-    offers: "विश्वसनीय सेवा (सुबह 9:00 बजे से रात 9:00 बजे तक)",
+    offers: "विश्वसनीय सेवा",
     userId: "seed_ms12",
     updatedAt: new Date()
   },
@@ -690,7 +691,7 @@ export const seedMedicalStores: MedicalStore[] = [
     address: "विद्यापीठ रोड, वाराणसी कैंट, वाराणसी, उत्तर प्रदेश 221002",
     licenseNo: "UPVNS014",
     contact: "+91 94116 94605",
-    offers: "जेनेरिक दवाएं (सुबह 10:00 बजे से रात 9:00 बजे तक)",
+    offers: "जेनेरिक दवाएं",
     userId: "seed_ms14",
     updatedAt: new Date()
   },
@@ -701,7 +702,7 @@ export const seedMedicalStores: MedicalStore[] = [
     address: "इंग्लिशिया लाइन रोड, कैंटोनमेंट, वाराणसी, उत्तर प्रदेश 221002",
     licenseNo: "UPVNS015",
     contact: "+91 94512 11111",
-    offers: "त्वरित सेवा (सुबह 9:30 बजे से रात 9:30 बजे तक)",
+    offers: "त्वरित सेवा",
     userId: "seed_ms15",
     updatedAt: new Date()
   },
@@ -712,7 +713,7 @@ export const seedMedicalStores: MedicalStore[] = [
     address: "गोविंद स्वीट्स के पास, आर्डरली बाजार, वाराणसी, उत्तर प्रदेश 221002",
     licenseNo: "UPVNS500",
     contact: "+91 94155 99999",
-    offers: "सुविधाजनक स्थान (सुबह 9:00 बजे से रात 9:00 बजे तक)",
+    offers: "सुविधाजनक स्थान",
     userId: "seed_ms500",
     updatedAt: new Date()
   }
@@ -746,4 +747,72 @@ export const seedYogaCenters: YogaCenter[] = [
         userId: "seed_yoga2",
         updatedAt: new Date(),
     }
+];
+
+export const seedAmbulances: Ambulance[] = [
+  {
+    id: "amb201",
+    driverName: "जीवनधारा एम्बुलेंस",
+    numberPlate: "UP65 AB 0201",
+    vehicleType: "सामान्य",
+    charges: "As per distance",
+    status: true,
+    contact: "9876543210",
+    serviceArea: "लंका, वाराणसी",
+    userId: "seed_amb_201",
+    updatedAt: new Date(),
+    location: { latitude: 25.2989, longitude: 82.9899 },
+  },
+  {
+    id: "amb202",
+    driverName: "गंगा एम्बुलेंस सेवा",
+    numberPlate: "UP65 AB 0202",
+    vehicleType: "आईसीयू",
+    charges: "As per distance",
+    status: true,
+    contact: "8765432109",
+    serviceArea: "सिगरा, वाराणसी",
+    userId: "seed_amb_202",
+    updatedAt: new Date(),
+    location: { latitude: 25.3180, longitude: 82.9915 },
+  },
+  {
+    id: "amb203",
+    driverName: "वाराणसी इमरजेंसी सर्विस",
+    numberPlate: "UP65 AB 0203",
+    vehicleType: "ट्रामा",
+    charges: "As per distance",
+    status: true,
+    contact: "7654321098",
+    serviceArea: "महमूरगंज, वाराणसी",
+    userId: "seed_amb_203",
+    updatedAt: new Date(),
+    location: { latitude: 25.3040, longitude: 82.9820 },
+  },
+  {
+    id: "amb204",
+    driverName: "काशी एम्बुलेंस",
+    numberPlate: "UP65 AB 0204",
+    vehicleType: "शिशु",
+    charges: "As per distance",
+    status: true,
+    contact: "6543210987",
+    serviceArea: "भेलूपुर, वाराणसी",
+    userId: "seed_amb_204",
+    updatedAt: new Date(),
+    location: { latitude: 25.3056, longitude: 82.9984 },
+  },
+    {
+    id: "amb205",
+    driverName: "पूर्वांचल मेडिकल एम्बुलेंस",
+    numberPlate: "UP65 AB 0205",
+    vehicleType: "एयर एम्बुलेंस",
+    charges: "As per distance",
+    status: true,
+    contact: "9876501234",
+    serviceArea: "चितईपुर, वाराणसी",
+    userId: "seed_amb_205",
+    updatedAt: new Date(),
+    location: { latitude: 25.2760, longitude: 82.9925 },
+  },
 ];

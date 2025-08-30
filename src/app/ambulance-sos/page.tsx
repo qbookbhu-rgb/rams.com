@@ -7,6 +7,7 @@ import { ArrowLeft, Search, Phone, IndianRupee, MapPin, Loader2, Send } from "lu
 import { Ambulance } from "@/lib/types/ambulance"
 import { intelligentSos } from "@/ai/sos-flow"
 import { useToast } from "@/hooks/use-toast"
+import { seedAmbulances } from "@/lib/seed-data"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -34,6 +35,8 @@ export default function AmbulanceSosPage() {
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser. We can't find nearby ambulances.")
       setLoading(false)
+      // Fallback to seed data if geolocation is not available
+      setAmbulances(seedAmbulances.filter(a => a.status === true));
       return
     }
 
@@ -49,12 +52,15 @@ export default function AmbulanceSosPage() {
             emergencyDescription: description,
           })
           if (result.ambulances.length === 0) {
-            setError("No available ambulances found near you at the moment.")
+             setError("No online ambulances found via AI. Showing available services from our directory.")
+             setAmbulances(seedAmbulances.filter(a => a.status === true));
+          } else {
+            setAmbulances(result.ambulances)
           }
-          setAmbulances(result.ambulances)
         } catch (e) {
           console.error("Error fetching ambulances: ", e)
-          setError("AI failed to find ambulances. Please try again later.")
+          setError("AI failed to find ambulances. Showing available services from our directory.")
+          setAmbulances(seedAmbulances.filter(a => a.status === true)); // Fallback on error
           toast({
             variant: "destructive",
             title: "AI Search Failed",
@@ -65,7 +71,8 @@ export default function AmbulanceSosPage() {
         }
       },
       () => {
-        setError("Unable to retrieve your location. Please enable location services.")
+        setError("Unable to retrieve your location. Showing available services from our directory.")
+        setAmbulances(seedAmbulances.filter(a => a.status === true)); // Fallback if location denied
         setLoading(false)
       }
     )
@@ -144,12 +151,12 @@ export default function AmbulanceSosPage() {
 
           {error && (
              <Alert variant="destructive">
-                <AlertTitle>Error</AlertTitle>
+                <AlertTitle>Notice</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
-          {!loading && !error && ambulances.map((ambulance) => (
+          {!loading && ambulances.length > 0 && ambulances.map((ambulance) => (
               <Card key={ambulance.id} className="overflow-hidden border-primary border-2 shadow-lg">
                  <CardHeader className="flex flex-row items-center justify-between p-4">
                     <div className="flex items-center gap-4">
@@ -185,6 +192,13 @@ export default function AmbulanceSosPage() {
                 </CardContent>
               </Card>
             ))}
+            
+            {!loading && ambulances.length === 0 && !error && (
+                <Alert>
+                    <AlertTitle>No Ambulances Found</AlertTitle>
+                    <AlertDescription>We couldn't find any available ambulances at the moment. Please try again later.</AlertDescription>
+                </Alert>
+            )}
         </div>
       </main>
     </div>
