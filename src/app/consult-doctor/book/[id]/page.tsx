@@ -180,8 +180,7 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
     return <p>No doctor found.</p>
   }
   
-  const commission = doctor.consultationFee * 0.05
-  const totalFee = doctor.consultationFee + commission
+  const totalFee = doctor.consultationFee * 1.05
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -265,10 +264,11 @@ export default function BookAppointmentPage({ params }: { params: { id: string }
                   <span className="text-muted-foreground">Doctor Fee</span>
                   <span className="font-medium">₹{doctor.consultationFee.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Company Commission (5%)</span>
-                  <span className="font-medium">₹{commission.toFixed(2)}</span>
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Platform Fee & Taxes</span>
+                  <span>₹{(totalFee - doctor.consultationFee).toFixed(2)}</span>
                 </div>
+                <Separator />
                 <div className="flex justify-between font-bold text-base">
                   <span>Total Amount Payable</span>
                   <span>₹{totalFee.toFixed(2)}</span>
@@ -359,5 +359,3 @@ function BookingSkeleton() {
     </div>
   )
 }
-
-    

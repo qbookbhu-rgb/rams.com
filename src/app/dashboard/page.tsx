@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Header } from "@/components/header"
 import { Card, CardContent } from "@/components/ui/card"
+import { useState } from "react"
 
 const popularSearches = [
   "Dermatologist",
@@ -39,6 +40,8 @@ const bottomNavItems = [
 
 export default function PatientDashboard() {
   const [user, loading] = useAuthState(auth)
+  const [location, setLocation] = useState("Bangalore");
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -55,7 +58,9 @@ export default function PatientDashboard() {
                             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                             <Input
                                 type="text"
-                                placeholder="Bangalore"
+                                placeholder="Location"
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
                                 className="pl-10 text-gray-900 dark:text-white"
                             />
                         </div>
@@ -64,6 +69,8 @@ export default function PatientDashboard() {
                             <Input
                                 type="text"
                                 placeholder="Search doctors, clinics, hospitals, etc."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 className="pl-10 text-gray-900 dark:text-white"
                             />
                         </div>

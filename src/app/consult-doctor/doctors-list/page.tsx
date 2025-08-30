@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { ArrowLeft, Search } from "lucide-react"
+import { ArrowLeft, Search, Star } from "lucide-react"
 import { collection, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Doctor } from "@/lib/types/doctors"
@@ -52,17 +52,6 @@ export default function DoctorsListPage() {
     fetchDoctors()
   }, [])
 
-  const getAvailableSlotsText = (slots: Doctor['availableTimeSlots']) => {
-    if (!slots) return 'No slots available';
-    let availableSlots: string[] = [];
-    if (slots.weekdays?.morning) availableSlots.push(`Weekdays: ${slots.weekdays.morning}`);
-    if (slots.weekdays?.evening) availableSlots.push(slots.weekdays.evening);
-    if (slots.weekends?.morning) availableSlots.push(` | Weekends: ${slots.weekends.morning}`);
-    if (slots.weekends?.evening) availableSlots.push(slots.weekends.evening);
-    return availableSlots.join(', ');
-  };
-
-
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-background px-4">
@@ -77,82 +66,51 @@ export default function DoctorsListPage() {
         </Button>
       </header>
       <main className="flex-1 p-4">
-        <div className="mx-auto max-w-md space-y-6">
+        <div className="mx-auto max-w-md space-y-4">
          
           {loading && (
             Array.from({ length: 3 }).map((_, index) => (
-              <Card key={index} className="overflow-hidden">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
-                    <Skeleton className="h-24 w-24 rounded-full" />
-                    <div className="flex-1 space-y-2">
-                      <Skeleton className="h-5 w-3/4" />
-                      <Skeleton className="h-4 w-1/2" />
-                      <Skeleton className="h-4 w-1/3" />
-                       <Skeleton className="h-4 w-2/3" />
-                    </div>
-                  </div>
-                  <Separator className="my-4" />
-                   <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <Skeleton className="h-4 w-1/4" />
-                        <Skeleton className="h-4 w-1/4" />
-                      </div>
-                       <div className="flex justify-between">
+                <Card key={index} className="overflow-hidden p-4">
+                    <div className="flex items-center gap-4">
+                      <Skeleton className="h-16 w-16 rounded-full" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
                         <Skeleton className="h-4 w-1/3" />
-                        <Skeleton className="h-4 w-1/4" />
                       </div>
-                       <div className="flex justify-between">
-                        <Skeleton className="h-5 w-1/3" />
-                        <Skeleton className="h-5 w-1/4" />
-                      </div>
+                       <Skeleton className="h-10 w-20" />
                     </div>
-                </CardContent>
-              </Card>
+                </Card>
             ))
           )}
 
           {error && <p className="text-center text-red-500">{error}</p>}
 
           {!loading && doctors.map((doctor) => {
-            const commission = doctor.consultationFee * 0.05
-            const totalFee = doctor.consultationFee + commission
+            const totalFee = doctor.consultationFee * 1.05
 
             return (
-              <Link href={`/consult-doctor/book/${doctor.id}`} key={doctor.id} className="block rounded-lg transition-shadow hover:shadow-md">
-                <Card className="overflow-hidden w-full">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-4">
-                      <Avatar className="h-24 w-24 border">
-                        <AvatarImage src={`https://i.pravatar.cc/150?u=${doctor.id}`} />
-                        <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 space-y-1">
-                        <h2 className="text-lg font-bold">{doctor.name}</h2>
-                        <p className="text-muted-foreground">{doctor.specialization}</p>
-                        <p className="text-sm text-muted-foreground">{doctor.experience} years experience</p>
-                        <p className="text-sm font-medium">{doctor.clinicName}</p>
-                        <p className="text-xs text-muted-foreground">{doctor.availableTimeSlots ? getAvailableSlotsText(doctor.availableTimeSlots) : 'Slots not configured'}</p>
+              <Card key={doctor.id} className="overflow-hidden w-full p-4">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-16 w-16 border">
+                      <AvatarImage src={`https://i.pravatar.cc/150?u=${doctor.id}`} />
+                      <AvatarFallback>{doctor.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-0.5">
+                      <h2 className="font-bold">{doctor.name}</h2>
+                      <p className="text-sm text-muted-foreground">{doctor.specialization}</p>
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <Star className="w-4 h-4 text-amber-400 fill-amber-400" /> 
+                        <span>4.8</span>
+                         <span className="mx-1">•</span>
+                        <span>{doctor.experience} yrs exp</span>
                       </div>
                     </div>
-                    <Separator className="my-4" />
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Doctor Fee</span>
-                        <span className="font-medium">₹{doctor.consultationFee.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Company Commission (5%)</span>
-                        <span className="font-medium">₹{commission.toFixed(2)}</span>
-                      </div>
-                      <div className="flex justify-between font-bold text-base">
-                        <span>You Pay</span>
-                        <span>₹{totalFee.toFixed(2)}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                    <Button asChild>
+                      <Link href={`/consult-doctor/book/${doctor.id}`}>Book</Link>
+                    </Button>
+                  </div>
+              </Card>
             )
           })}
         </div>
