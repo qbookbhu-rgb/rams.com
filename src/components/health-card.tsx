@@ -1,6 +1,7 @@
 
 "use client"
 
+import { useState, useEffect } from 'react';
 import { QrCodeIcon } from "@/components/icons"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -33,6 +34,17 @@ function ChipIcon() {
 
 
 export function HealthCard({ name, userId }: HealthCardProps) {
+  const [validThru, setValidThru] = useState('');
+
+  useEffect(() => {
+    // This code runs only on the client, after the component has mounted.
+    // This avoids hydration mismatch errors.
+    const currentYear = new Date().getFullYear();
+    // Assuming card is valid for 3 years from the current year for display
+    const expiryYear = (currentYear + 3).toString().slice(-2);
+    setValidThru(`12/${expiryYear}`);
+  }, []);
+
   // Format the user ID into groups of 4
   const formattedUserId = userId.replace(/(.{4})/g, '$1 ').trim();
 
@@ -60,7 +72,11 @@ export function HealthCard({ name, userId }: HealthCardProps) {
         {/* Valid Thru */}
         <div className="absolute top-[88px] right-6 text-center">
             <p className="text-[10px] opacity-70">VALID THRU</p>
-            <p className="font-semibold text-lg tracking-wider">12/27</p>
+            {validThru ? (
+               <p className="font-semibold text-lg tracking-wider">{validThru}</p>
+            ) : (
+               <Skeleton className="h-6 w-12 bg-white/20 mt-1" />
+            )}
         </div>
 
 
