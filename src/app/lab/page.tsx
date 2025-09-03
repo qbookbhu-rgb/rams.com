@@ -36,6 +36,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+export const dynamic = 'force-dynamic';
+
 const testRequests = [
   { id: "TEST001", patient: "Priya Sharma", test: "Complete Blood Count", date: "2024-08-10", status: "Sample Collected" },
   { id: "TEST002", patient: "Rahul Verma", test: "Lipid Profile", date: "2024-08-10", status: "Report Sent" },
