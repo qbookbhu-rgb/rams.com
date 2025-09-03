@@ -2,135 +2,106 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
-import {
-  MapPin,
-  Search,
-  Stethoscope,
-  Pill,
-  ClipboardList,
-  FlaskConical,
-  BookOpen,
-  Building,
-} from "lucide-react"
-import { useAuthState } from "react-firebase-hooks/auth"
-import { auth } from "@/lib/firebase"
-
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Stethoscope, MapPin, Pill, FlaskConical, Bell, ClipboardList, User, Tag, Bell as BellIcon, Home, Search as SearchIcon, MessageCircle, CalendarDays, User as UserIcon } from "lucide-react"
 import { Header } from "@/components/header"
 import { Card, CardContent } from "@/components/ui/card"
-import { useState } from "react"
+import Image from "next/image"
 
-const popularSearches = [
-  "Dermatologist",
-  "Pediatrician",
-  "Gynecologist",
-  "Cardiologist",
+const serviceItems = [
+  { title: "Consult Doctor", icon: Stethoscope, href: "/consult-doctor", color: "bg-blue-400" },
+  { title: "Nearby Clinics", icon: MapPin, href: "#", color: "bg-green-400" },
+  { title: "Medicines", icon: Pill, href: "/order-medicines", color: "bg-yellow-400" },
+  { title: "Lab Tests", icon: FlaskConical, href: "/lab-tests", color: "bg-purple-400" },
+  { title: "Emergency", icon: Bell, href: "/ambulance-sos", color: "bg-red-400" },
+  { title: "My Health Card", icon: ClipboardList, href: "#", color: "bg-teal-400" },
 ]
 
-const bottomNavItems = [
-  { title: "Consult with a doctor", icon: Stethoscope, href: "/consult-doctor" },
-  { title: "Order Medicines", icon: Pill, href: "/order-medicines" },
-  { title: "View medical records", icon: ClipboardList, href: "#" },
-  { title: "Book test", icon: FlaskConical, href: "/lab-tests" },
-  { title: "Read articles", icon: BookOpen, href: "#" },
-  { title: "For healthcare providers", icon: Building, href: "#" },
+const listItems = [
+    { title: "Notifications", icon: BellIcon, href: "#" },
+    { title: "Featured Doctors Online", icon: User, href: "/consult-doctor/doctors-list" },
+    { title: "Ongoing Offers", icon: Tag, href: "#" },
+]
+
+const navItems = [
+  { title: "Home", icon: Home, href: "/dashboard", active: true },
+  { title: "Search", icon: SearchIcon, href: "/search" },
+  { title: "Chat", icon: MessageCircle, href: "#" },
+  { title: "My Appointments", icon: CalendarDays, href: "#" },
+  { title: "Profile", icon: UserIcon, href: "#" },
 ]
 
 export default function PatientDashboard() {
-  const [user, loading] = useAuthState(auth)
-  const [location, setLocation] = useState("Bangalore");
-  const [searchQuery, setSearchQuery] = useState("");
-
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <div className="flex min-h-screen w-full flex-col bg-gray-50 dark:bg-gray-900">
       <Header />
-      <main className="flex-1">
-        <section className="relative w-full bg-blue-900/5 text-white hero-background overflow-hidden">
-          <div className="container mx-auto px-4 md:px-6 relative z-10">
-             <div className="flex flex-col items-center justify-center text-center py-20 md:py-32">
-                <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white font-headline">Your home for health</h1>
-                <div className="mt-8 w-full max-w-4xl bg-white dark:bg-gray-800/50 dark:backdrop-blur-sm rounded-xl shadow-2xl p-4 md:p-6">
-                    <h2 className="text-2xl font-semibold text-gray-700 dark:text-white mb-4">Find and Book</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        <div className="relative">
-                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                            <Input
-                                type="text"
-                                placeholder="Location"
-                                value={location}
-                                onChange={(e) => setLocation(e.target.value)}
-                                className="pl-10 text-gray-900 dark:text-white"
-                            />
-                        </div>
-                        <div className="relative">
-                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                            <Input
-                                type="text"
-                                placeholder="Search doctors, clinics, hospitals, etc."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-10 text-gray-900 dark:text-white"
-                            />
-                        </div>
-                    </div>
-                     <div className="mt-4 flex flex-wrap items-center justify-center gap-2 md:gap-4">
-                        <p className="text-sm text-gray-600 dark:text-gray-300">Popular searches:</p>
-                        {popularSearches.map(search => (
-                             <Link key={search} href="#" className="text-sm text-primary dark:text-cyan-400 hover:underline">
-                                {search}
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            </div>
-          </div>
-          <div className="absolute bottom-0 left-0 w-full h-48">
-             <Image
-                src="https://picsum.photos/seed/cityscape/1600/400"
-                alt="City illustration"
-                layout="fill"
-                objectFit="cover"
-                className="opacity-20"
-                data-ai-hint="cityscape illustration"
-            />
-          </div>
-        </section>
-
-        <section className="bg-white dark:bg-card shadow-md">
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 divide-x dark:divide-gray-700">
-                    {bottomNavItems.map(item => (
-                        <Link href={item.href} key={item.title} className="flex flex-col items-center justify-center text-center p-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
-                            <item.icon className="h-8 w-8 text-primary mb-2" />
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{item.title}</span>
-                        </Link>
-                    ))}
-                </div>
-            </div>
-        </section>
-
-        <section className="py-12 md:py-20">
-             <div className="container mx-auto px-4 md:px-6">
-                 <Card className="overflow-hidden">
-                    <CardContent className="p-0">
-                         <Link href="#">
-                            <Image
-                                src="https://picsum.photos/seed/expert-surgeon/1200/400"
-                                alt="Book appointment with an expert surgeon"
-                                width={1200}
-                                height={400}
-                                className="w-full h-auto object-cover"
-                                data-ai-hint="doctor surgeon"
-                            />
-                        </Link>
-                    </CardContent>
+      <main className="flex-1 pb-24">
+        <div className="container mx-auto max-w-lg p-4">
+          <div className="grid grid-cols-2 gap-4">
+            {serviceItems.map(item => (
+              <Link href={item.href} key={item.title}>
+                <Card className={`overflow-hidden ${item.color} text-white shadow-lg hover:shadow-xl transition-shadow`}>
+                  <CardContent className="flex flex-col items-center justify-center p-6 aspect-video">
+                    <item.icon className="h-10 w-10" />
+                    <span className="mt-2 font-semibold text-center">{item.title}</span>
+                  </CardContent>
                 </Card>
-             </div>
-        </section>
+              </Link>
+            ))}
+          </div>
 
+          <div className="mt-6">
+            <Card className="bg-blue-100 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800 shadow-md">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-blue-800 dark:text-blue-200">30% OFF</h3>
+                  <p className="text-blue-700 dark:text-blue-300">on doctor consultation</p>
+                </div>
+                 <Image 
+                    src="https://picsum.photos/seed/doctor-patient/150/100"
+                    alt="Doctor with patient"
+                    width={120}
+                    height={80}
+                    className="rounded-lg object-cover"
+                    data-ai-hint="doctor patient illustration"
+                 />
+              </CardContent>
+            </Card>
+          </div>
+            
+          <div className="mt-6">
+            <Card>
+                <CardContent className="p-4">
+                    <ul className="space-y-4">
+                        {listItems.map(item => (
+                            <li key={item.title}>
+                                <Link href={item.href} className="flex items-center gap-4 text-lg font-medium text-gray-700 dark:text-gray-200 hover:text-primary">
+                                    <item.icon className="h-6 w-6 text-gray-500" />
+                                    <span>{item.title}</span>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </CardContent>
+            </Card>
+          </div>
+        </div>
       </main>
+      <BottomNav />
     </div>
   )
+}
+
+function BottomNav() {
+  return (
+    <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 dark:bg-gray-950 dark:border-gray-800">
+      <div className="grid h-full max-w-lg grid-cols-5 mx-auto font-medium">
+        {navItems.map(item => (
+          <Link href={item.href} key={item.title} className={`inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group ${item.active ? 'text-primary' : 'text-gray-500 dark:text-gray-400'}`}>
+            <item.icon className={`w-6 h-6 mb-1 ${item.active ? 'text-primary' : 'text-gray-500 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-blue-500'}`} />
+            <span className="text-xs">{item.title}</span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
 }
