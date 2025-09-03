@@ -18,6 +18,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
 
+export const dynamic = 'force-dynamic';
 
 export default function DoctorsListPage() {
   const [doctors, setDoctors] = useState<Doctor[]>([])
