@@ -29,6 +29,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 
+export const dynamic = 'force-dynamic';
 
 export default function YogaBookingPage() {
   const [classType, setClassType] = useState("all")

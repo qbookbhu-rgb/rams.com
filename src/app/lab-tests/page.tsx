@@ -22,6 +22,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
 
+export const dynamic = 'force-dynamic';
+
 export default function LabTestsPage() {
   const [labs, setLabs] = useState<Lab[]>([])
   const [loading, setLoading] = useState(true)

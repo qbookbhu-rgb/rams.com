@@ -49,6 +49,8 @@ import { MedicalStore } from "@/lib/types/medical-stores"
 import { Skeleton } from "@/components/ui/skeleton"
 import { onAuthStateChanged } from "firebase/auth"
 
+export const dynamic = 'force-dynamic';
+
 const orders = [
   {
     id: "ORD001",

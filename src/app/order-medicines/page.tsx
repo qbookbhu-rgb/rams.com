@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 
+export const dynamic = 'force-dynamic';
+
 export default function OrderMedicinesPage() {
   const [stores, setStores] = useState<MedicalStore[]>([])
   const [loading, setLoading] = useState(true)

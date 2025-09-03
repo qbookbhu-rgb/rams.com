@@ -39,6 +39,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { onAuthStateChanged } from "firebase/auth"
 
+export const dynamic = 'force-dynamic';
+
 const classes = [
   {
     id: "CLS001",
