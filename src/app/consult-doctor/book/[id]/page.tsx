@@ -34,6 +34,7 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { bookAppointment } from "./actions"
 
+export const dynamic = 'force-dynamic';
 
 export default function BookAppointmentPage({ params }: { params: { id: string } }) {
   const [doctor, setDoctor] = useState<Doctor | null>(null)
