@@ -46,6 +46,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth"
 import { Appointment } from "@/lib/types/appointment"
 
+export const dynamic = 'force-dynamic';
+
 interface Patient {
   uid: string;
   email: string;
