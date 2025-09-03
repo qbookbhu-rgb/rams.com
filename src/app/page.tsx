@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { HeartPulse } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -41,7 +41,25 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [user, authLoading] = useAuthState(auth)
 
-  if (authLoading) {
+  useEffect(() => {
+    const checkUserRoleAndRedirect = async (user: any) => {
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+      let role: Role = "patient"; // Default role
+      if (userDocSnap.exists()) {
+        const userProfile = userDocSnap.data();
+        role = userProfile.role;
+      }
+      redirectToDashboard(role);
+    }
+
+    if (user) {
+      checkUserRoleAndRedirect(user);
+    }
+  }, [user, router]);
+
+
+  if (authLoading || user) {
     return (
        <div className="flex min-h-screen items-center justify-center p-4 medical-background">
           <Card className="w-full max-w-md shadow-2xl animate-pulse">
@@ -68,11 +86,6 @@ export default function LoginPage() {
     )
   }
 
-  if (user) {
-    router.push("/dashboard");
-    return null; // or a loading spinner
-  }
-
   const handleLogin = async () => {
     if (!email || !password) {
       toast({
@@ -96,7 +109,7 @@ export default function LoginPage() {
             title: "Login Successful",
             description: `Welcome back! Redirecting...`,
         });
-        redirectToDashboard(userProfile.role);
+        // The useEffect will handle the redirection
       } else {
          // This case might happen if a user was created in Auth but not in Firestore
          // Or if they are a patient who hasn't been assigned a role document yet.
@@ -105,7 +118,7 @@ export default function LoginPage() {
             title: "Login Successful",
             description: "Welcome back! Redirecting to patient dashboard.",
          });
-         redirectToDashboard("patient");
+         // The useEffect will handle the redirection
       }
 
     } catch (error: any) {
@@ -131,7 +144,7 @@ export default function LoginPage() {
         title: "Login Successful",
         description: `Welcome! Redirecting to dashboard...`,
       });
-      redirectToDashboard("patient");
+      // The useEffect will handle the redirection
     } catch (error: any) {
       console.error("Google Sign-in failed:", error);
       toast({
