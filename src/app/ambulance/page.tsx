@@ -36,6 +36,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 
+export const dynamic = 'force-dynamic';
+
 const tripHistory = [
   { id: "TRIP001", patient: "Rohan Kumar", date: "2024-08-12", status: "Completed" },
   { id: "TRIP002", patient: "Anita Desai", date: "2024-08-11", status: "Completed" },
