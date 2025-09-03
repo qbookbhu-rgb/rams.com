@@ -303,5 +303,3 @@ function ClassTable({ classes }: { classes: typeof classes }) {
     </Table>
   )
 }
-
-    
