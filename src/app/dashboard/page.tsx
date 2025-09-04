@@ -7,6 +7,8 @@ import { Header } from "@/components/header"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
 
+export const dynamic = 'force-dynamic';
+
 const serviceItems = [
   { title: "Consult Doctor", icon: Stethoscope, href: "/consult-doctor", color: "bg-blue-400" },
   { title: "Nearby Clinics", icon: MapPin, href: "#", color: "bg-green-400" },
