@@ -36,6 +36,8 @@ import { doc, getDoc } from "firebase/firestore"
 import { YogaCenter } from "@/lib/types/yoga"
 import { Skeleton } from "@/components/ui/skeleton"
 
+export const dynamic = 'force-dynamic';
+
 const profileFormSchema = z.object({
   centerName: z.string().min(2, "Center name must be at least 2 characters."),
   instructorName: z.string().min(2, "Instructor name is required."),

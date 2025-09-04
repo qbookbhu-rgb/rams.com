@@ -35,6 +35,8 @@ import { doc, getDoc } from "firebase/firestore"
 import { MedicalStore } from "@/lib/types/medical-stores"
 import { Skeleton } from "@/components/ui/skeleton"
 
+export const dynamic = 'force-dynamic';
+
 const profileFormSchema = z.object({
   storeName: z.string().min(2, "Store name must be at least 2 characters."),
   ownerName: z.string().min(2, "Owner name must be at least 2 characters."),

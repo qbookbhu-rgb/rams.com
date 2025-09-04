@@ -42,6 +42,8 @@ import { doc, getDoc } from "firebase/firestore"
 import { Ambulance } from "@/lib/types/ambulance"
 import { Skeleton } from "@/components/ui/skeleton"
 
+export const dynamic = 'force-dynamic';
+
 const profileFormSchema = z.object({
   driverName: z.string().min(2, "Driver name must be at least 2 characters."),
   photo: z.any().optional(),

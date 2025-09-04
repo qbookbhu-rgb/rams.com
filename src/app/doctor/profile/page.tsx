@@ -35,6 +35,8 @@ import { Doctor } from "@/lib/types/doctors"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
 
+export const dynamic = 'force-dynamic';
+
 const profileFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   photo: z.any().optional(),
