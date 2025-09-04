@@ -198,7 +198,7 @@ export default function LabDashboard() {
                     <div className="flex items-center justify-between font-bold">
                         <span className="text-muted-foreground">Net Payout</span>
                         <span className="text-lg">₹{netPayout.toFixed(2)}</span>
-                    </div>
+                      </div>
 
                     </CardContent>
                     <CardFooter className="flex-col items-start gap-2">
