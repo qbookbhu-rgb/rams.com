@@ -32,6 +32,8 @@ import { useAuthState } from "react-firebase-hooks/auth"
 
 type Role = "patient" | "doctor" | "medical-store" | "ambulance" | "lab" | "yoga"
 
+export const dynamic = 'force-dynamic';
+
 export default function LoginPage() {
   const router = useRouter()
   const { toast } = useToast()
